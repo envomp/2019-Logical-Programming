@@ -43,7 +43,7 @@ aunt(Mina, Tadi) :-
 
 uncle(Mina, Onu) :-
     (mother(Mina, Parent); father(Mina, Parent)),
-    father(Parent, Vend),
+    brother(Parent, Vend),
     Onu == Vend,
     male(Vend).
 
