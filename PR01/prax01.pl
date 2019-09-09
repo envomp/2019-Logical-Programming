@@ -36,15 +36,14 @@ sister(Mina, Ode) :-
     female(Ode).
 
 aunt(Mina, Tadi) :-
-    mother(Mina, Ema),
-    sister(Ema, Ode),
-    Tadi == Ode,
-    female(Ode).
+    (mother(Mina, Parent); father(Mina, Parent)),
+    sister(Parent, Tadi),
+    female(Tadi).
 
 
 uncle(Mina, Onu) :-
-    mother(Mina, Ema),
-    sister(Ema, Vend),
+    (mother(Mina, Parent); father(Mina, Parent)),
+    sister(Parent, Vend),
     Onu == Vend,
     male(Vend).
 
@@ -55,5 +54,3 @@ grandfather(Mina, Vanaisa) :-
 grandmother(Mina, Vanaema) :-
     mother(Mina, Ema), mother(Ema, Vanaema), female(Vanaema);
     father(Mina, Ema), mother(Ema, Vanaema), female(Vanaema).
-
-    
