@@ -1,11 +1,59 @@
-% ja - ,
-% või - ;
+male(ago).
+male(karl).
+male(enrico).
+male(aron).
+female(kadri).
+female(helin).
+female(helin2).
+female(kass).
+married(helin, ago).
+married(ago, helin).
+mother(kadri, helin).
+mother(enrico, helin).
+mother(helin, helin2).
 
-ema(liia, juku).
-ema(kati, liia).
-isa(ken, karin).
-isa(juhan, liia).
+father(Mina, Isa) :- 
+    mother(Mina, Ema),
+    male(Isa),
+    female(Ema),
+    married(Ema, Isa).
 
-vanem(X, Y) :- isa(X, Y); ema(X, Y).
-vanavanem(X, Z) :- vanem(X, Y), vanem(Y, Z).
+brother(Mina, Vend) :-
+    mother(Mina, Ema),
+    father(Mina, Isa),
+    mother(Vend, Ema),
+    father(Vend, Isa),
+    Mina \= Vend,
+    male(Vend).
+    
 
+sister(Mina, Ode) :-
+    mother(Mina, Ema),
+    father(Mina, Isa),
+    mother(Ode, Ema),
+    father(Ode, Isa),
+    Mina \= Ode,
+    female(Ode).
+
+aunt(Mina, Tadi) :-
+    mother(Mina, Ema),
+    sister(Ema, Ode),
+    Tadi == Ode,
+    female(Ode).
+
+
+uncle(Mina, Onu) :-
+    mother(Mina, Ema),
+    sister(Ema, Vend),
+    Onu == Vend,
+    male(Vend).
+
+grandfather(Mina, Vanaisa) :-
+    mother(Mina, Ema), father(Ema, Vanaisa), male(Vanaisa);
+    father(Mina, Ema), father(Ema, Vanaisa), male(Vanaisa).
+
+grandmother(Mina, Vanaema) :-
+    mother(Mina, Ema), mother(Ema, Vanaema), female(Vanaema);
+    father(Mina, Ema), mother(Ema, Vanaema), female(Vanaema).
+
+    
