@@ -66,5 +66,50 @@ Term = baz(foo(1))
 
 */
 
-min_of_3(A, B, C, D):- D = min(min(A, B), C).
+male(ago).
+male(ago2).
+male(ago3).
+male(ago4).
+male(ago5).
+female(kadri).
+female(kadri2).
+female(kadri3).
+female(kadri4).
+female(kadri5).
+
+mother(kadri, kadri2).
+mother(kadri2, kadri3).
+mother(kadri3, kadri4).
+mother(kadri4, kadri5).
+
+father(ago, ago2).
+father(ago2, ago3).
+father(ago3, ago4).
+father(ago4, ago5).
+
+ancestor(Child, Parent) :- mother(Child, Parent) ; father(Child, Parent).
+
+ancestor(Child, Parent) :-
+    (mother(Child, X) ; father(Child, X)),
+    ancestor(X, Parent).
+
+male_ancestor(Child, Parent) :- father(Child, Parent).
+
+male_ancestor(Child, Parent) :-
+    ancestor(Child, X),
+    male_ancestor(X, Parent).
+
+female_ancestor(Child, Parent) :- mother(Child, Parent).
+
+female_ancestor(Child, Parent) :-
+    ancestor(Child, X),
+    female_ancestor(X, Parent).
+
+
+ancestor1(Child, Parent, N) :- N == 0, ancestor(Child, Parent).
+
+ancestor1(Child, Parent, N) :-
+    ancestor(Child, X),
+    ancestor1(Child, Parent, N - 1).
+
 
