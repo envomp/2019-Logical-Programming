@@ -150,10 +150,16 @@ female_ancestor(Child, Parent) :-
     female_ancestor(X, Parent).
 
 
-ancestor1(Child, Parent, N) :- N == 0, ancestor(Child, Parent).
+ancestor1(Child, Parent, N) :- N == 1, (mother(Child, Parent) ; father(Child, Parent)).
 
 ancestor1(Child, Parent, N) :-
-    ancestor(Child, X),
-    ancestor1(Child, Parent, N - 1).
+    X is -(N, 1),
+    (mother(Child, Y) ; father(Child, Y)),
+    ancestor1(Y, Parent, X).
 
+ancestor2(Child, Parent, X) :- X < 0, (mother(Child, Parent) ; father(Child, Parent)).
 
+ancestor2(Child, Parent, N) :-
+    X is -(N, 1),
+    (mother(Child, Y) ; father(Child, Y)),
+    ancestor2(Y, Parent, X).
