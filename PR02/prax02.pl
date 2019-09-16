@@ -82,10 +82,54 @@ mother(kadri2, kadri3).
 mother(kadri3, kadri4).
 mother(kadri4, kadri5).
 
-father(ago, ago2).
-father(ago2, ago3).
-father(ago3, ago4).
-father(ago4, ago5).
+married(kadri, ago).
+married(kadri2, ago2).
+married(kadri3, ago3).
+married(kadri4, ago4).
+married(kadri5, ago5).
+
+father(Mina, Isa) :-
+    mother(Mina, Ema),
+    male(Isa),
+    female(Ema),
+    married(Ema, Isa).
+
+brother(Mina, Vend) :-
+    mother(Mina, Ema),
+    father(Mina, Isa),
+    mother(Vend, Ema),
+    father(Vend, Isa),
+    Mina \= Vend,
+    male(Vend).
+
+
+sister(Mina, Ode) :-
+    mother(Mina, Ema),
+    father(Mina, Isa),
+    mother(Ode, Ema),
+    father(Ode, Isa),
+    Mina \= Ode,
+    female(Ode).
+
+aunt(Mina, Tadi) :-
+    (mother(Mina, Parent); father(Mina, Parent)),
+    sister(Parent, Tadi),
+    female(Tadi).
+
+
+uncle(Mina, Onu) :-
+    (mother(Mina, Parent); father(Mina, Parent)),
+    brother(Parent, Vend),
+    Onu == Vend,
+    male(Vend).
+
+grandfather(Mina, Vanaisa) :-
+    mother(Mina, Ema), father(Ema, Vanaisa), male(Vanaisa);
+    father(Mina, Ema), father(Ema, Vanaisa), male(Vanaisa).
+
+grandmother(Mina, Vanaema) :-
+    mother(Mina, Ema), mother(Ema, Vanaema), female(Vanaema);
+    father(Mina, Ema), mother(Ema, Vanaema), female(Vanaema).
 
 ancestor(Child, Parent) :- mother(Child, Parent) ; father(Child, Parent).
 
