@@ -157,9 +157,13 @@ ancestor1(Child, Parent, N) :-
     (mother(Child, Y) ; father(Child, Y)),
     ancestor1(Y, Parent, X).
 
-ancestor2(Child, Parent, X) :- X =< 0, (mother(Child, Parent) ; father(Child, Parent)).
+
+count_children(Parent, N) :-
+    bagof(Children, (mother(Children, Parent) ; father(Children, Parent)), List),
+    length(List, N).
+
+ancestor2(Child, Parent, X) :- count_children(Parent, Y), Y > X.
 
 ancestor2(Child, Parent, N) :-
-    X is -(N, 1),
     (mother(Child, Y) ; father(Child, Y)),
-    ancestor2(Y, Parent, X).
+    ancestor2(Y, Parent, N).
