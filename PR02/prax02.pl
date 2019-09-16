@@ -157,7 +157,7 @@ ancestor1(Child, Parent, N) :-
     (mother(Child, Y) ; father(Child, Y)),
     ancestor1(Y, Parent, X).
 
-ancestor2(Child, Parent, X) :- X < 0, (mother(Child, Parent) ; father(Child, Parent)).
+ancestor2(Child, Parent, X) :- X =< 0, (mother(Child, Parent) ; father(Child, Parent)).
 
 ancestor2(Child, Parent, N) :-
     X is -(N, 1),
