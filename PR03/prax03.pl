@@ -35,7 +35,7 @@ kordista([Head|Tail], X, Vastus) :- helper(X, Head, Answer), append(Answer, Answ
 
 paaritu_arv(X) :- 1 is X rem 2.
 paaris_arv(X) :- 0 is X rem 2.
-suurem_kui(X, Number) :- X > Number.
+suurem_kui(Number, X) :- X > Number.
 
 vordle_predikaadiga([], _, []).
 vordle_predikaadiga([Head|Tail], Method, Answer) :-
