@@ -39,7 +39,7 @@ suurem_kui(X, Number) :- X > Number.
 
 vordle_predikaadiga([], _, []).
 vordle_predikaadiga([Head|Tail], Method, Answer) :-
-        append(Method, Head, List),
+        append(Method, [Head], List),
         Term =.. List,
         write(Term),
         nl,
