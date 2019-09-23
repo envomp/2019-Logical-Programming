@@ -9,17 +9,18 @@ suurim([],[]).
 suurim([H],[H]).
 suurim([H1,H2|Tail],[M|U]) :-
     M is max(H1,H2),
-    append([H2],Tail ,Answer),
-    suurim(Answer,U).
+    %append([H2],Tail ,Answer),
+    suurim([H2|Tail],U).
 
 
 paki([],[]).
 paki([H],[H]).
 paki([Head1,Head2|Tail], [Head1|U]) :-
-    Head1 == Head2,
+    (Head1 == Head2,
     paki([Head2|Tail],[Head1|U]);
     Head1 \= Head2,
-    paki([Head2|Tail], U).
+    paki([Head2|Tail], U)),
+    write(U).
 
 
 duplikeeri([],[]).
@@ -37,27 +38,15 @@ paaris_arv(X) :- 0 is X rem 2.
 suurem_kui(X, Number) :- X > Number.
 
 vordle_predikaadiga([], _, []).
-vordle_predikaadiga([Head|Tail], [Method], Answer) :-
-        Term =.. [Method, Head],
+vordle_predikaadiga([Head|Tail], Method, Answer) :-
+        append(Method, Head, List),
+        Term =.. List,
         write(Term),
         nl,
         Term,
-        vordle_predikaadiga(Tail, [Method], Vastus),
+        vordle_predikaadiga(Tail, Method, Vastus),
         append([Head], Vastus, Answer),
         write(Answer).
 
-vordle_predikaadiga([_|Tail], [Method], Vastus) :-
-        vordle_predikaadiga(Tail, [Method], Vastus).
-
-vordle_predikaadiga([Head|Tail], [Method, X], Answer) :-
-        Term =.. [Method, Head, X],
-        write(Term),
-        nl,
-        Term,
-        vordle_predikaadiga(Tail, [Method, X], Vastus),
-        append([Head], Vastus, Answer),
-        write(Answer).
-
-vordle_predikaadiga([_|Tail], [Method, X], Vastus) :-
-        vordle_predikaadiga(Tail, [Method, X], Vastus).
-
+vordle_predikaadiga([_|Tail], Method, Vastus) :-
+        vordle_predikaadiga(Tail, Method, Vastus).
