@@ -21,3 +21,28 @@ paki([Head1,Head2|Tail], [Head1|U]) :-
     Head1 \= Head2,
     paki([Head2|Tail], U).
 
+
+duplikeeri([],[]).
+duplikeeri([H1| Tail1], [H1,H1|Tail2]):- duplikeeri(Tail1, Tail2).
+
+
+helper(X, Element, Answer) :- X \= 0, Y is X - 1, append([Element], Answer2, Answer), helper(Y, Element, Answer2); Answer = [], X == 0.
+
+kordista([], _, []).
+kordista([Head|Tail], X, Vastus) :- helper(X, Head, Answer), append(Answer, Answer2, Vastus), kordista(Tail, X, Answer2).
+
+
+paaritu_arv(X) :- X rem 2 == 1.
+paaris_arv(X) :- X rem 2 == 0.
+suurem_kui(X, Number) :- X > Number.
+
+vordle_predikaadiga([], _, []).
+vordle_predikaadiga([Head|Tail], [Method], Answer) :- (
+        append(Head, Vastus, Answer),
+        Term =.. [Method, Head],
+        write(Term),
+        Term,
+        vordle_predikaadiga(Tail, Method, Vastus)
+    );
+        append([], Vastus, Answer),
+        vordle_predikaadiga(Tail, Method, Vastus).
