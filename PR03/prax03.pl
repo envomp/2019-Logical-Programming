@@ -46,7 +46,7 @@ vordle_predikaadiga([Head|Tail], [Method], Answer) :-
         append([Head], Vastus, Answer),
         write(Answer).
 
-vordle_predikaadiga([Head|Tail], [Method], Vastus) :-
+vordle_predikaadiga([_|Tail], [Method], Vastus) :-
         vordle_predikaadiga(Tail, [Method], Vastus).
 
 vordle_predikaadiga([Head|Tail], [Method, X], Answer) :-
@@ -58,6 +58,6 @@ vordle_predikaadiga([Head|Tail], [Method, X], Answer) :-
         append([Head], Vastus, Answer),
         write(Answer).
 
-vordle_predikaadiga([Head|Tail], [Method, X], Vastus) :-
+vordle_predikaadiga([_|Tail], [Method, X], Vastus) :-
         vordle_predikaadiga(Tail, [Method, X], Vastus).
 
