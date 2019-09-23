@@ -32,17 +32,32 @@ kordista([], _, []).
 kordista([Head|Tail], X, Vastus) :- helper(X, Head, Answer), append(Answer, Answer2, Vastus), kordista(Tail, X, Answer2).
 
 
-paaritu_arv(X) :- X rem 2 == 1.
-paaris_arv(X) :- X rem 2 == 0.
+paaritu_arv(X) :- 1 is X rem 2.
+paaris_arv(X) :- 0 is X rem 2.
 suurem_kui(X, Number) :- X > Number.
 
 vordle_predikaadiga([], _, []).
-vordle_predikaadiga([Head|Tail], [Method], Answer) :- (
-        append(Head, Vastus, Answer),
+vordle_predikaadiga([Head|Tail], [Method], Answer) :-
         Term =.. [Method, Head],
         write(Term),
+        nl,
         Term,
-        vordle_predikaadiga(Tail, Method, Vastus)
-    );
-        append([], Vastus, Answer),
-        vordle_predikaadiga(Tail, Method, Vastus).
+        vordle_predikaadiga(Tail, [Method], Vastus),
+        append([Head], Vastus, Answer),
+        write(Answer).
+
+vordle_predikaadiga([Head|Tail], [Method], Vastus) :-
+        vordle_predikaadiga(Tail, [Method], Vastus).
+
+vordle_predikaadiga([Head|Tail], [Method, X], Answer) :-
+        Term =.. [Method, Head, X],
+        write(Term),
+        nl,
+        Term,
+        vordle_predikaadiga(Tail, [Method, X], Vastus),
+        append([Head], Vastus, Answer),
+        write(Answer).
+
+vordle_predikaadiga([Head|Tail], [Method, X], Vastus) :-
+        vordle_predikaadiga(Tail, [Method, X], Vastus).
+
