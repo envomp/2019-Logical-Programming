@@ -40,7 +40,8 @@ reisi(Start, End) :-
     reisi(Start, X),
     reisi(X, End).
 
-path(Node, Node, _, Node).
+
+path(Start, Stop, _, mine(Start, Stop)).
 path(Start, Finish, Visited, mine(Start, Stop, Next)) :-
     mineHind(Start, Stop, _),
     not(member(Stop, Visited)),
