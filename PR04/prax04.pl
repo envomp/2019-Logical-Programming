@@ -1,19 +1,24 @@
+laevaga(tallinn, helsinki, 120).
+laevaga(tallinn, stockholm, 480).
+bussiga(tallinn, riia, 300).
+rongiga(riia, berlin, 680).
+lennukiga(tallinn, helsinki, 30).
+lennukiga(helsinki, paris, 180).
+lennukiga(paris, berlin, 120).
+lennukiga(paris, tallinn, 120).
 
-mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _); lennukiga(End, Start, _).
-mineVahend(Start, End, rongiga) :- rongiga(Start, End, _); rongiga(End, Start, _).
-mineVahend(Start, End, bussiga) :- bussiga(Start, End, _); bussiga(End, Start, _).
-mineVahend(Start, End, laevaga) :- laevaga(Start, End, _); laevaga(End, Start, _).
+
+mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _).
+mineVahend(Start, End, rongiga) :- rongiga(Start, End, _).
+mineVahend(Start, End, bussiga) :- bussiga(Start, End, _).
+mineVahend(Start, End, laevaga) :- laevaga(Start, End, _).
 
 
 mineHind(Start, End, Price) :-
     lennukiga(Start, End, Price);
     rongiga(Start, End, Price);
     bussiga(Start, End, Price);
-    laevaga(Start, End, Price);
-    lennukiga(End, Start, Price);
-    rongiga(End, Start, Price);
-    bussiga(End, Start, Price);
-    laevaga(End, Start, Price).
+    laevaga(Start, End, Price).
 
 
 reisi(Start, End) :-
