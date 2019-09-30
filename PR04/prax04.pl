@@ -41,7 +41,7 @@ reisi(Start, End) :-
     reisi(X, End).
 
 
-path(Start, Stop, _, mine(Start, Stop)).
+path(Start, Stop, _, mine(Start, Stop)) :- mineHind(Start, Stop, _).
 path(Start, Finish, Visited, mine(Start, Stop, Next)) :-
     mineHind(Start, Stop, _),
     not(member(Stop, Visited)),
@@ -51,7 +51,7 @@ reisi(Start, End, Road) :-
     path(Start, End, [Start], Road).
 
 
-path2(Node, Node, _, Node).
+path2(Start, Stop, _, mine(Start, Stop, Transport)) :- mineVahend(Start, Stop, Transport).
 path2(Start, Finish, Visited, mine(Start, Stop, Transport, Next)) :-
     mineVahend(Start, Stop, Transport),
     not(member(Stop, Visited)),
@@ -62,16 +62,16 @@ reisi_transpordiga(Start, End, Road) :-
     path2(Start, End, [Start], Road).
 
 
-path3(Node, Node, _, Node, 0).
-path3(Start, Finish, Visited, mine(Start, Next), NewPrice) :-
+path3(Start, Stop, _, mine(Start, Stop, Transport), Hind) :- mineVahend(Start, Stop, Transport),  mineHind(Start, Stop, Hind).
+path3(Start, Finish, Visited, mine(Start, Next), +(Trip, Price)) :-
     mineHind(Start, Stop, Trip),
     not(member(Stop, Visited)),
-    NewPrice is +(Price, Trip),
     path3(Stop, Finish, [Stop | Visited], Next, Price).
 
 
-reisi(Start, End, Road, Price) :-
-    path3(Start, End, [Start], Road, Price).
+reisi(Start, End, Road, Cost) :-
+    path3(Start, End, [Start], Road, Price),
+    Cost is eval(Price).
 
 
 
