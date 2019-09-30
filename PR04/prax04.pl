@@ -11,17 +11,21 @@ lennukiga(paris, berlin, 120).
 lennukiga(paris, tallinn, 120).
 
 
-mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _).
-mineVahend(Start, End, rongiga) :- rongiga(Start, End, _).
-mineVahend(Start, End, bussiga) :- bussiga(Start, End, _).
-mineVahend(Start, End, laevaga) :- laevaga(Start, End, _).
+mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _); lennukiga(End, Start, _).
+mineVahend(Start, End, rongiga) :- rongiga(Start, End, _); rongiga(End, Start, _).
+mineVahend(Start, End, bussiga) :- bussiga(Start, End, _); bussiga(End, Start, _).
+mineVahend(Start, End, laevaga) :- laevaga(Start, End, _); laevaga(End, Start, _).
 
 
 mineHind(Start, End, Price) :-
     lennukiga(Start, End, Price);
     rongiga(Start, End, Price);
     bussiga(Start, End, Price);
-    laevaga(Start, End, Price).
+    laevaga(Start, End, Price);
+    lennukiga(End, Start, Price);
+    rongiga(End, Start, Price);
+    bussiga(End, Start, Price);
+    laevaga(End, Start, Price).
 
 
 reisi(Start, End) :-
@@ -37,7 +41,7 @@ reisi(Start, End) :-
     reisi(X, End).
 
 path(Node, Node, _, Node).
-path(Start, Finish, Visited, mine(Start, Next)) :-
+path(Start, Finish, Visited, mine(Start, Stop, Next)) :-
     mineHind(Start, Stop, _),
     not(member(Stop, Visited)),
     path(Stop, Finish, [Stop | Visited], Next).
