@@ -95,4 +95,3 @@ reisi(Start, End, Road, Cost) :-
 
 
 
-
