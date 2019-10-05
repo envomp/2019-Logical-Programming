@@ -45,6 +45,7 @@ path(Start, Finish, Visited, mine(Start, Stop, Next)) :-
     not(member(Stop, Visited)),
     path(Stop, Finish, [Stop | Visited], Next).
 
+
 reisi(Start, End, Road) :-
     path(Start, End, [Start], Road).
 
