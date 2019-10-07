@@ -25,6 +25,29 @@ mineHind(Start, End, Price) :-
     laevaga(End, Start, Price, _, _).
 
 
+mineStartToEnd(Start, End, StartTime, EndTime) :-
+    (lennukiga(Start, End, _, StartTime, EndTime);
+    rongiga(Start, End, _, StartTime, EndTime);
+    bussiga(Start, End, _, StartTime, EndTime);
+    laevaga(Start, End, _, StartTime, EndTime);
+    lennukiga(End, Start, _, StartTime, EndTime);
+    rongiga(End, Start, _, StartTime, EndTime);
+    bussiga(End, Start, _, StartTime, EndTime);
+    laevaga(End, Start, _, StartTime, EndTime)).
+
+
+mineAeg(Start, End, Price, Time) :-
+    (lennukiga(Start, End, Price, X, Y);
+    rongiga(Start, End, Price, X, Y);
+    bussiga(Start, End, Price, X, Y);
+    laevaga(Start, End, Price, X, Y);
+    lennukiga(End, Start, Price, X, Y);
+    rongiga(End, Start, Price, X, Y);
+    bussiga(End, Start, Price, X, Y);
+    laevaga(End, Start, Price, X, Y)),
+    aegade_vahe(X, Y, Time).
+
+
 reisi(Start, End) :-
     mineHind(Start, End, _).
 
@@ -90,24 +113,43 @@ trips_to_best(Start, End, BestRoad, BestPrice) :-
 odavaim_reis(Start, End, BestRoad, BestPrice) :-
     trips_to_best(Start, End, BestRoad, BestPrice).
 
+
+path4(Start, Stop, _, mine(Start, Stop, Transport), Hind, time(0, 0, 0), Stop) :- mineVahend(Start, Stop, Transport),  mineHind(Start, Stop, Hind).
+path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime, NextStop) :-
+    mineVahend(Start, Stop, Transport),
+    mineAeg(Start, Stop, Trip, Time),
+    not(member(Stop, Visited)),
+    path4(Stop, Finish, [Stop | Visited], Next, Price, NextSumTime, NextStopFuture),
+    mineVahend(Start, NextStop, _),
+    mineVahend(NextStop, NextStopFuture, _),
+    mineStartToEnd(Start, NextStop, _, OneEnd),
+    mineStartToEnd(NextStop, NextStopFuture, OneStart, _),
+    aegade_vahe(OneEnd, OneStart, Delta),
+    time(H, _, _) = Delta,
+    ((H < 1, aegade_vahe(time(24, 0, 0), Delta, X), sum_time(Time, X, Y), sum_time(NextSumTime, Y, SumTime));(H > 1, sum_time(NextSumTime, Time, SumTime))),
+    Summa is +(Trip, Price).
+
+trips_to_fastest(Start, End, Road, Price) :-
+    path4(Start, End, [Start], Road, Price, _, _).
+
+
 lyhim_reis(Start, End, Road, Price) :-
-    pass.
+    trips_to_fastest(Start, End, Road, Price).
 
 
 sum_time(Aeg1, Aeg2, Aeg3):-
-    time(H1,M1,S1) = Aeg1,
-    time(H2,M2,S2) = Aeg2,
-    time(H3, M3, S3) = Vahe,
-    X is S2 - S1,
-    ((X < 0, S3 is X + 60, F1 is 1); (X >= 0, S3 is X, F1 is 0)),
-    Y is M2 - M1 - F1,
-    ((Y < 0, M3 is Y + 60, F2 is 1); (Y >= 0, M3 is Y, F2 is 0)),
-    Z is H2 - H1 - F2,
-    ((Z < 0, H3 is Z + 24); (Z >= 0, H3 is Z)).
+    time(H1, M1, S1) = Aeg1,
+    time(H2, M2, S2) = Aeg2,
+    time(H3, M3, S3) = Aeg3,
+    X is S2 + S1,
+    ((X >= 60, S3 is X - 60, F1 is 1); (X < 60, S3 is X, F1 is 0)),
+    Y is M2 + M1 + F1,
+    ((Y >= 60, M3 is Y - 60, F2 is 1); (Y < 60, M3 is Y, F2 is 0)),
+    H3 is H2 + H1 + F2.
 
 aegade_vahe(Aeg1, Aeg2, Vahe):-
-    time(H1,M1,S1) = Aeg1,
-    time(H2,M2,S2) = Aeg2,
+    time(H1, M1, S1) = Aeg1,
+    time(H2, M2, S2) = Aeg2,
     time(H3, M3, S3) = Vahe,
     X is S2 - S1,
     ((X < 0, S3 is X + 60, F1 is 1); (X >= 0, S3 is X, F1 is 0)),
