@@ -31,7 +31,7 @@ reisi(Start, End) :-
 
 
 reisi(Start, End) :-
-    (retract(lennuk(Start, X));
+    (retract(lennukiga(Start, X));
     retract(laevaga(Start, X));
     retract(rongiga(Start, X));
     retract(bussiga(Start, X))),
@@ -62,37 +62,13 @@ reisi_transpordiga(Start, End, Road) :-
 
 
 path3(Start, Stop, _, mine(Start, Stop, Transport), Hind) :- mineVahend(Start, Stop, Transport),  mineHind(Start, Stop, Hind).
-path3(Start, Finish, Visited, mine(Start, Stop, Transport, Next), +(Trip, Price)) :-
+path3(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa) :-
     mineVahend(Start, Stop, Transport),
     mineHind(Start, Stop, Trip),
     not(member(Stop, Visited)),
-    path3(Stop, Finish, [Stop | Visited], Next, Price).
+    path3(Stop, Finish, [Stop | Visited], Next, Price),
+    Summa is +(Trip, Price).
 
 
-reisi(Start, End, Road, Cost) :-
-    path3(Start, End, [Start], Road, Price),
-    Cost is eval(Price).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+reisi(Start, End, Road, Price) :-
+    path3(Start, End, [Start], Road, Price).

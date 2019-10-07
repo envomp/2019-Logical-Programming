@@ -143,6 +143,9 @@ male_ancestor(Child, Parent) :-
     ancestor(Child, X),
     male_ancestor(X, Parent).
 
+male_ancestor1(Child, Parent) :- ancestor(Child, Parent), male(Parent).
+
+
 female_ancestor(Child, Parent) :- mother(Child, Parent).
 
 female_ancestor(Child, Parent) :-
