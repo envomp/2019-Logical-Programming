@@ -7,6 +7,7 @@ lennukiga(tallinn, helsinki, 30).
 lennukiga(helsinki, paris, 180).
 lennukiga(paris, berlin, 120).
 lennukiga(paris, tallinn, 120).
+lennukiga(usa, china, 1).
 
 
 mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _); lennukiga(End, Start, _).
