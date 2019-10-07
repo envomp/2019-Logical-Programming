@@ -37,7 +37,7 @@ reisi(Start, End) :-
 %    retract(bussiga(Start, X))),
 %    reisi(Start, X),
 %    reisi(X, End).
-    reisi(Start, End, Road).
+    reisi(Start, End, _).
 
 
 path(Start, Stop, _, mine(Start, Stop)) :- mineHind(Start, Stop, _).
@@ -46,8 +46,8 @@ path(Start, Finish, Visited, mine(Start, Stop, Next)) :-
     not(member(Stop, Visited)),
     path(Stop, Finish, [Stop | Visited], Next).
 
-
 reisi(Start, End, Road) :-
+    Start \= End,
     path(Start, End, [Start], Road).
 
 
