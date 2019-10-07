@@ -120,6 +120,7 @@ path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime
     mineAeg(Start, Stop, Trip, Time),
     not(member(Stop, Visited)),
     path4(Stop, Finish, [Stop | Visited], Next, Price, NextSumTime, NextStopFuture),
+    !,
     mineVahend(Start, NextStop, _),
     mineVahend(NextStop, NextStopFuture, _),
     mineStartToEnd(Start, NextStop, _, OneEnd),
@@ -130,7 +131,8 @@ path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime
     Summa is +(Trip, Price).
 
 trips_to_fastest(Start, End, Road, Price) :-
-    path4(Start, End, [Start], Road, Price, _, _).
+    path4(Start, End, [Start], Road, Price, SumTime, _),
+    write(SumTime).
 
 
 lyhim_reis(Start, End, Road, Price) :-
