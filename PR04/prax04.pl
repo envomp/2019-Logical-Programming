@@ -31,12 +31,13 @@ reisi(Start, End) :-
 
 
 reisi(Start, End) :-
-    (retract(lennukiga(Start, X));
-    retract(laevaga(Start, X));
-    retract(rongiga(Start, X));
-    retract(bussiga(Start, X))),
-    reisi(Start, X),
-    reisi(X, End).
+%    (retract(lennukiga(Start, X));
+%    retract(laevaga(Start, X));
+%    retract(rongiga(Start, X));
+%    retract(bussiga(Start, X))),
+%    reisi(Start, X),
+%    reisi(X, End).
+    reisi(Start, End, Road).
 
 
 path(Start, Stop, _, mine(Start, Stop)) :- mineHind(Start, Stop, _).
