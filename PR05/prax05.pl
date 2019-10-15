@@ -131,8 +131,10 @@ path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime
     Summa is +(Trip, Price).
 
 trips_to_fastest(Start, End, Road, Price) :-
-    path4(Start, End, [Start], Road, Price, SumTime, _),
-    write(SumTime).
+    findall(SumTime, path4(Start, End, [Start], _, _, time(SumTime, _, _), _), List),
+    min_list(List, SumTime),
+    path4(Start, End, [Start], Road, Price, time(SumTime, _, _), _),
+    !.
 
 
 lyhim_reis(Start, End, Road, Price) :-
