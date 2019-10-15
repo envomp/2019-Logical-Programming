@@ -1,4 +1,5 @@
 
+:- consult(data).
 
 mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _, _, _); lennukiga(End, Start, _, _, _).
 mineVahend(Start, End, rongiga) :- rongiga(Start, End, _, _, _); rongiga(End, Start, _, _, _).
@@ -119,7 +120,7 @@ path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime
     mineStartToEnd(NextStop, NextStopFuture, OneStart, _),
     aegade_vahe(OneEnd, OneStart, Delta),
     time(H, _, _) = Delta,
-    ((H < 1, aegade_vahe(time(24, 0, 0), Delta, X), sum_time(Time, X, Y), sum_time(NextSumTime, Y, SumTime));(H > 1, sum_time(NextSumTime, Time, SumTime))),
+    ((H < 1, aegade_vahe(time(24, 0, 0), Delta, X), sum_time(Time, X, Y), sum_time(NextSumTime, Y, SumTime)) ; (H > 1, sum_time(NextSumTime, Time, SumTime))),
     Summa is +(Trip, Price).
 
 trips_to_fastest(Start, End, Road, Price) :-
