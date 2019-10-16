@@ -26,12 +26,12 @@ public class API {
 
     public static void main(String[] args) throws IOException {
 
-        URL url = new URL("https://api.lufthansa.com/v1/operations/airports/departures/FRA/2019-10-17T00:00?limit=10");
+        URL url = new URL("https://api.lufthansa.com/v1/operations/schedules/FRA/TLL/2019-10-16?directFlights=0");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
         con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Authorization", "Bearer djjzsucrr6d44c568q52cq8e");
-        con.setRequestProperty("X-Originating-IP", "176.46.112.18");
+		con.setRequestProperty("Authorization", "Bearer 94kenctfkzy2xhbd83jpzr2c");
+		con.setRequestProperty("X-Originating-IP", "193.40.250.231");
+		con.setRequestMethod("GET");
 
 	    System.out.println(con.getResponseCode());
 	    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));

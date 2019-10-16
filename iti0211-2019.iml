@@ -7,5 +7,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="gson-2.8.5" level="application" />
     <orderEntry type="library" name="jackson-annotations-2.10.0.pr3" level="application" />
+    <orderEntry type="library" name="jpl" level="application" />
   </component>
 </module>
