@@ -26,17 +26,19 @@ public class API {
 
     public static void main(String[] args) throws IOException {
 
-        URL url = new URL("https://api.lufthansa.com/v1/mds-references/airports/?limit=80&offset=0&LHoperated=0");
+        URL url = new URL("https://api.lufthansa.com/v1/operations/airports/departures/FRA/2019-10-17T00:00?limit=10");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Authorization", "Bearer ugaxfysn4sb99c3ajec7exmy");
-        con.setRequestProperty("X-Originating-IP", "193.40.250.231");
+        con.setRequestProperty("Authorization", "Bearer djjzsucrr6d44c568q52cq8e");
+        con.setRequestProperty("X-Originating-IP", "176.46.112.18");
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        ArrayList<String> airports = new ArrayList<>();
+	    System.out.println(con.getResponseCode());
+	    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	    String inputLine;
+	    ArrayList<String> airports = new ArrayList<>();
         while ((inputLine = in.readLine()) != null) {
+	        System.out.println(inputLine);
             Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
             Matcher matcher = pattern.matcher(inputLine);
 
