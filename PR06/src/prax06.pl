@@ -114,7 +114,7 @@ path4(Start, Stop, _, mine(Start, Stop, Transport), Hind, SumTime, Stop, Progres
     retractall(cheapest(BestProgressiveCost)),
     asserta(cheapest(NewProgressiveCost)).
 
-path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime, NextStop, ProgressiveCost) :-
+path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, TotalSumTime, NextStop, ProgressiveCost) :-
     mineVahend(Start, Stop, Transport),
     mineAeg(Start, Stop, Trip, Time),
     not(member(Stop, Visited)),
@@ -133,6 +133,7 @@ path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime
     aegade_vahe(OneEnd, OneStart, Delta),
     time(H, _, _) = Delta,
     ((H < 1, aegade_vahe(time(24, 0, 0), Delta, X), sum_time(Time, X, Y), sum_time(NextSumTime, Y, SumTime)) ; (H >= 1, sum_time(NextSumTime, Time, SumTime))),
+    sum_time(Delta, SumTime, TotalSumTime),
     Summa is +(Trip, Price).
 
 
