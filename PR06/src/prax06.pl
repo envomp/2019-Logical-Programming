@@ -1,5 +1,7 @@
 
 :- consult(data).
+:- dynamic cheapest/1.
+:- dynamic stops/1.
 
 mineVahend(Start, End, lennukiga) :- lennukiga(Start, End, _, _, _); lennukiga(End, Start, _, _, _).
 
@@ -47,22 +49,34 @@ reisi_transpordiga(Start, End, Road) :-
     path2(Start, End, [Start], Road).
 
 
-path3(Start, Stop, _, mine(Start, Stop, Transport), Hind) :- mineVahend(Start, Stop, Transport),  mineHind(Start, Stop, Hind).
-path3(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa) :-
+path3(Start, Stop, _, mine(Start, Stop, Transport), Hind, ProgressiveCost) :-
+    mineVahend(Start, Stop, Transport),
+    mineHind(Start, Stop, Hind),
+    NewProgressiveCost is ProgressiveCost + Hind,
+    cheapest(BestProgressiveCost),
+    NewProgressiveCost =< BestProgressiveCost,
+    retractall(cheapest(BestProgressiveCost)),
+    asserta(cheapest(NewProgressiveCost)).
+
+path3(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, ProgressiveCost) :-
     mineVahend(Start, Stop, Transport),
     mineHind(Start, Stop, Trip),
     not(member(Stop, Visited)),
     length(Visited, X),
-    X < 2,
-    path3(Stop, Finish, [Stop | Visited], Next, Price),
+    stops(AllowedStops),
+    X < AllowedStops,
+    NewProgressiveCost is ProgressiveCost + Trip,
+    cheapest(BestProgressiveCost),
+    NewProgressiveCost =< BestProgressiveCost,
+    path3(Stop, Finish, [Stop | Visited], Next, Price, NewProgressiveCost),
     Summa is +(Trip, Price).
 
 
 reisi(Start, End, Road, Price) :-
-    path3(Start, End, [Start], Road, Price).
+    path3(Start, End, [Start], Road, Price, 0).
 
 reisi_answer(Start, End, Road, Price) :-
-    path3(Start, End, [Start], Road, Price),
+    path3(Start, End, [Start], Road, Price, 0),
     !.
 
 min_list([Head], Head).
@@ -73,24 +87,45 @@ min_list([Head, Head2|Tail], Minimum) :-
 
 
 trips_to_best(Start, End, BestRoad, BestPrice) :-
-    findall(Price, reisi(Start, End, _, Price), List),
-    min_list(List, BestPrice),
-    !,
-    reisi_answer(Start, End, BestRoad, BestPrice).
+    asserta(cheapest(1000000)),
+    asserta(stops(2)),
+    stops(Stops),
+    findall(TempPrice, reisi(Start, End, _, TempPrice), _),
+    retractall(stops(Stops)),
+    asserta(stops(10)),
+    ((findall(Price, reisi(Start, End, _, Price), List), min_list(List, BestPrice), !, reisi_answer(Start, End, BestRoad, BestPrice));
+     (cheapest(BestPricePreGen), reisi_answer(Start, End, BestRoad, BestPricePreGen))).
 
 
 odavaim_reis(Start, End, BestRoad, BestPrice) :-
     trips_to_best(Start, End, BestRoad, BestPrice).
 
 
-path4(Start, Stop, _, mine(Start, Stop, Transport), Hind, SumTime, Stop) :- mineVahend(Start, Stop, Transport),  mineHind(Start, Stop, Hind), mineStartToEnd(Start, Stop, StartTime, EndTime), aegade_vahe(StartTime, EndTime, SumTime).
-path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime, NextStop) :-
+path4(Start, Stop, _, mine(Start, Stop, Transport), Hind, SumTime, Stop, ProgressiveCost) :-
+    mineVahend(Start, Stop, Transport),
+    mineHind(Start, Stop, Hind),
+    mineStartToEnd(Start, Stop, StartTime, EndTime),
+    aegade_vahe(StartTime, EndTime, SumTime),
+    mineAeg(Start, Stop, Trip, Time),
+    time(H, _, _) = Time,
+    NewProgressiveCost is ProgressiveCost + H,
+    cheapest(BestProgressiveCost),
+    NewProgressiveCost =< BestProgressiveCost,
+    retractall(cheapest(BestProgressiveCost)),
+    asserta(cheapest(NewProgressiveCost)).
+
+path4(Start, Finish, Visited, mine(Start, Stop, Transport, Next), Summa, SumTime, NextStop, ProgressiveCost) :-
     mineVahend(Start, Stop, Transport),
     mineAeg(Start, Stop, Trip, Time),
     not(member(Stop, Visited)),
     length(Visited, X),
-    X < 1,
-    path4(Stop, Finish, [Stop | Visited], Next, Price, NextSumTime, NextStopFuture),
+    stops(AllowedStops),
+    X < AllowedStops,
+    time(H2, _, _) = Time,
+    NewProgressiveCost is ProgressiveCost + H2,
+    cheapest(BestProgressiveCost),
+    NewProgressiveCost =< BestProgressiveCost,
+    path4(Stop, Finish, [Stop | Visited], Next, Price, NextSumTime, NextStopFuture, NewProgressiveCost),
     mineVahend(Start, NextStop, _),
     mineVahend(NextStop, NextStopFuture, _),
     mineStartToEnd(Start, NextStop, _, OneEnd),
@@ -112,10 +147,16 @@ min_time_list([Head, Head2|Tail], Minimum) :-
     (X1 < X2, min_time_list([Head|Tail], Minimum))).
 
 trips_to_fastest(Start, End, Road, Price, BestTime) :-
-    findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _), List),
+    asserta(cheapest(100)),
+    asserta(stops(2)),
+    stops(Stops),
+    findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), _),
+    retractall(stops(Stops)),
+    asserta(stops(10)),
+    findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), List),
     min_time_list(List, BestTime),
     !,
-    path4(Start, End, [Start], Road, Price, BestTime, _), !.
+    path4(Start, End, [Start], Road, Price, BestTime, _, 0), !.
 
 
 lyhim_reis(Start, End, Road, Price, BestTime) :-
