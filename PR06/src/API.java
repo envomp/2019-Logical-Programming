@@ -25,7 +25,9 @@ public class API {
 
 //		do_all_APIs();
 
-		do_query();
+		do_query("a", "e");
+	    do_query("fra", "dus");
+
     }
 
 	private static void do_all_APIs() throws InterruptedException, IOException {
@@ -78,10 +80,7 @@ public class API {
 		in.close();
 	}
 
-	private static void do_query() {
-        String start = "a";
-        String end = "e";
-
+	private static void do_query(String start, String end) {
         String path = "Path";
         String price = "Price";
         String time = "Time";
