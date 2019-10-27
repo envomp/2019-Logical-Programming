@@ -826,3 +826,11 @@ lennukiga(iad, jfk, 5115, time(6, 0, 0.0), time(7, 25, 0.0)).
 lennukiga(bog, gru, 249, time(13, 35, 0.0), time(21, 45, 0.0)).
 lennukiga(fra, lhr, 906, time(12, 0, 0.0), time(12, 40, 0.0)).
 lennukiga(mxp, muc, 1855, time(9, 55, 0.0), time(11, 0, 0.0)).
+
+lennukiga(a, b, 906, time(12, 0, 0.0), time(12, 40, 0.0)).
+lennukiga(b, c, 1855, time(9, 55, 0.0), time(11, 0, 0.0)).
+lennukiga(b, d, 9855, time(9, 55, 0.0), time(10, 0, 0.0)).
+lennukiga(c, d, 906, time(12, 0, 0.0), time(12, 40, 0.0)).
+lennukiga(d, e, 1230, time(2, 25, 0.0), time(4, 0, 0.0)).
+lennukiga(d, e, 1670, time(17, 35, 0.0), time(19, 0, 0.0)).
+lennukiga(d, e, 1965, time(9, 55, 0.0), time(13, 0, 0.0)).

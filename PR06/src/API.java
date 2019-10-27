@@ -79,8 +79,8 @@ public class API {
 	}
 
 	private static void do_query() {
-        String start = "fra";
-        String end = "dus";
+        String start = "a";
+        String end = "e";
 
         String path = "Path";
         String price = "Price";
