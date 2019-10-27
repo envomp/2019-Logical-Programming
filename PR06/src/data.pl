@@ -1,6 +1,7 @@
 lennukiga(ord, fra, 9151, time(18, 20, 0.0), time(9, 45, 0.0)).
 lennukiga(vie, arn, 315, time(15, 15, 0.0), time(17, 30, 0.0)).
 lennukiga(mxp, bru, 3154, time(8, 30, 0.0), time(10, 5, 0.0)).
+lennukiga(fra, txl, 38, time(8, 15, 0.0), time(9, 25, 0.0)).
 lennukiga(fra, cdg, 1026, time(7, 25, 0.0), time(8, 35, 0.0)).
 lennukiga(lhr, fra, 901, time(9, 30, 0.0), time(12, 0, 0.0)).
 lennukiga(muc, cdg, 2234, time(15, 35, 0.0), time(17, 10, 0.0)).
@@ -12,7 +13,6 @@ lennukiga(muc, cdg, 2240, time(22, 15, 0.0), time(23, 50, 0.0)).
 lennukiga(muc, pek, 7318, time(13, 30, 0.0), time(5, 10, 0.0)).
 lennukiga(lcy, zrh, 457, time(12, 25, 0.0), time(14, 55, 0.0)).
 lennukiga(iad, gru, 7003, time(22, 5, 0.0), time(8, 55, 0.0)).
-lennukiga(fra, txl, 38, time(8, 15, 0.0), time(9, 25, 0.0)).
 lennukiga(pek, muc, 723, time(12, 35, 0.0), time(16, 45, 0.0)).
 lennukiga(bwi, mia, 1183, time(5, 0, 0.0), time(7, 37, 0.0)).
 lennukiga(bru, ord, 7894, time(11, 0, 0.0), time(12, 55, 0.0)).

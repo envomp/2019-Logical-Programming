@@ -25,67 +25,67 @@ public class API {
 
 //		do_all_APIs();
 
-		do_query("a", "e");
-	    do_query("fra", "dus");
+        do_query("a", "e");
+        do_query("fra", "txl");
 
     }
 
-	private static void do_all_APIs() throws InterruptedException, IOException {
-		HashSet<String> airports = new HashSet<>();
-		for (String start : airportCodes) {
-			for (String end : airportCodes) {
-				try {
-					do_API(airports, start, end);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				System.out.println(start);
-				System.out.println(end);
+    private static void do_all_APIs() throws InterruptedException, IOException {
+        HashSet<String> airports = new HashSet<>();
+        for (String start : airportCodes) {
+            for (String end : airportCodes) {
+                try {
+                    do_API(airports, start, end);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(start);
+                System.out.println(end);
 
-				TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(1);
 
-			}
-		}
+            }
+        }
 
-		BufferedWriter writer = new BufferedWriter(new FileWriter("src/data.pl"));
-		for (String rule : airports) {
-			writer.write(rule);
-			writer.newLine();
-		}
-		writer.close();
-	}
+        BufferedWriter writer = new BufferedWriter(new FileWriter("src/data.pl"));
+        for (String rule : airports) {
+            writer.write(rule);
+            writer.newLine();
+        }
+        writer.close();
+    }
 
-	private static void do_API(HashSet<String> airports, String start, String end) throws IOException {
-		URL url = new URL(String.format("https://api.lufthansa.com/v1/operations/schedules/%s/%s/2019-10-16?directFlights=0", start, end));
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setRequestProperty("Accept", "application/json");
-		con.setRequestProperty("Authorization", "Bearer 94kenctfkzy2xhbd83jpzr2c");
-		con.setRequestProperty("X-Originating-IP", "193.40.250.231");
-		con.setRequestMethod("GET");
+    private static void do_API(HashSet<String> airports, String start, String end) throws IOException {
+        URL url = new URL(String.format("https://api.lufthansa.com/v1/operations/schedules/%s/%s/2019-10-16?directFlights=0", start, end));
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Authorization", "Bearer 94kenctfkzy2xhbd83jpzr2c");
+        con.setRequestProperty("X-Originating-IP", "193.40.250.231");
+        con.setRequestMethod("GET");
 
-		System.out.println(con.getResponseCode());
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		while ((inputLine = in.readLine()) != null) {
-			System.out.println(inputLine);
-			Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-			Matcher matcher = pattern.matcher(inputLine);
+        System.out.println(con.getResponseCode());
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
+            Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(inputLine);
 
-			while (matcher.find()) {
-				String travelPlan = String.format("lennukiga(%s, %s, %s, time(%d, %d, 0.0), time(%d, %d, 0.0)).", matcher.group(1).toLowerCase(), matcher.group(5).toLowerCase(), matcher.group(9), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(6)), Integer.parseInt(matcher.group(7)));
-				airports.add(travelPlan);
-				System.out.println(travelPlan);
-			}
-		}
-		in.close();
-	}
+            while (matcher.find()) {
+                String travelPlan = String.format("lennukiga(%s, %s, %s, time(%d, %d, 0.0), time(%d, %d, 0.0)).", matcher.group(1).toLowerCase(), matcher.group(5).toLowerCase(), matcher.group(9), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(6)), Integer.parseInt(matcher.group(7)));
+                airports.add(travelPlan);
+                System.out.println(travelPlan);
+            }
+        }
+        in.close();
+    }
 
-	private static void do_query(String start, String end) {
+    private static void do_query(String start, String end) {
         String path = "Path";
         String price = "Price";
         String time = "Time";
 
-		long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         Query setup = new Query("consult('PR06/src/prax06.pl')");
 
         System.out.println("consult " + setup.hasSolution());
@@ -105,8 +105,8 @@ public class API {
         Map<String, Term> shortest = query_shortest.oneSolution();
 
         System.out.println("Path = " + shortest.get(path) + ".");
-		System.out.println("Price = " + shortest.get(price) + ".");
+        System.out.println("Price = " + shortest.get(price) + ".");
         System.out.println("Time = " + shortest.get(time) + ".");
-		System.out.println(String.format("\n\nEcecution took %s seconds.\n", (double) (System.currentTimeMillis() - startTime) / 1000));
+        System.out.println(String.format("\n\nEcecution took %s seconds.\n", (double) (System.currentTimeMillis() - startTime) / 1000));
     }
 }
