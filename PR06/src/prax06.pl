@@ -87,12 +87,12 @@ min_list([Head, Head2|Tail], Minimum) :-
 
 
 trips_to_best(Start, End, BestRoad, BestPrice) :-
-    asserta(cheapest(1000000)),
-    asserta(stops(2)),
+    asserta(cheapest(10000000)),
+    asserta(stops(1)),
     stops(Stops),
     findall(TempPrice, reisi(Start, End, _, TempPrice), _),
     retractall(stops(Stops)),
-    asserta(stops(10)),
+    asserta(stops(3)),
     ((findall(Price, reisi(Start, End, _, Price), List), min_list(List, BestPrice), !, reisi_answer(Start, End, BestRoad, BestPrice));
      (cheapest(BestPricePreGen), reisi_answer(Start, End, BestRoad, BestPricePreGen))).
 
@@ -148,12 +148,12 @@ min_time_list([Head, Head2|Tail], Minimum) :-
     (X1 < X2, min_time_list([Head|Tail], Minimum))).
 
 trips_to_fastest(Start, End, Road, Price, BestTime) :-
-    asserta(cheapest(10000)),
-    asserta(stops(2)),
+    asserta(cheapest(100000)),
+    asserta(stops(1)),
     stops(Stops),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), _),
     retractall(stops(Stops)),
-    asserta(stops(10)),
+    asserta(stops(3)),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), List),
     min_time_list(List, BestTime),
     !,
