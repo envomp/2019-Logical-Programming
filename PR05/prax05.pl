@@ -161,5 +161,3 @@ aegade_vahe(Aeg1, Aeg2, Vahe):-
     ((Y < 0, M3 is Y + 60, F2 is 1); (Y >= 0, M3 is Y, F2 is 0)),
     Z is H2 - H1 - F2,
     ((Z < 0, H3 is Z + 24); (Z >= 0, H3 is Z)).
-
-
