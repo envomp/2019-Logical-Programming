@@ -26,7 +26,7 @@ public class API {
 //		do_all_APIs();
 
         do_query("a", "e");
-        do_query("fra", "txl");
+        do_query("bru", "txl");
 
     }
 
@@ -96,7 +96,7 @@ public class API {
 
         System.out.println(String.format("\n?- odavaim_reis(%s, %s, %s, %s).", start, end, path, price));
         System.out.println("Path = " + cheapest.get(path) + ".");
-        System.out.println("Time = " + cheapest.get(price) + ".");
+        System.out.println("Price = " + cheapest.get(price) + ".");
 
 
         System.out.println(String.format("\n\n?- lyhim_reis(%s, %s, %s, %s, %s).", start, end, path, price, time));
@@ -107,6 +107,6 @@ public class API {
         System.out.println("Path = " + shortest.get(path) + ".");
         System.out.println("Price = " + shortest.get(price) + ".");
         System.out.println("Time = " + shortest.get(time) + ".");
-        System.out.println(String.format("\n\nEcecution took %s seconds.\n", (double) (System.currentTimeMillis() - startTime) / 1000));
+        System.out.println(String.format("\n\nExecution took %s seconds.\n", (double) (System.currentTimeMillis() - startTime) / 1000));
     }
 }

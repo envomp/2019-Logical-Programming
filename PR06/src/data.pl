@@ -824,8 +824,6 @@ lennukiga(dus, fra, 79, time(11, 50, 0.0), time(12, 40, 0.0)).
 lennukiga(dus, txl, 5124, time(14, 40, 0.0), time(15, 55, 0.0)).
 lennukiga(iad, jfk, 5115, time(6, 0, 0.0), time(7, 25, 0.0)).
 lennukiga(bog, gru, 249, time(13, 35, 0.0), time(21, 45, 0.0)).
-lennukiga(fra, lhr, 906, time(12, 0, 0.0), time(12, 40, 0.0)).
-lennukiga(mxp, muc, 1855, time(9, 55, 0.0), time(11, 0, 0.0)).
 
 lennukiga(a, b, 100, time(12, 0, 0.0), time(12, 40, 0.0)).
 lennukiga(b, c, 200, time(13, 55, 0.0), time(14, 0, 0.0)).
