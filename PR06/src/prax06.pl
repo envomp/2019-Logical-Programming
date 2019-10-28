@@ -153,7 +153,7 @@ trips_to_fastest(Start, End, Road, Price, BestTime) :-
     stops(Stops),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), _),
     retractall(stops(Stops)),
-    asserta(stops(3)),
+    asserta(stops(2)),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), List),
     min_time_list(List, BestTime),
     !,
