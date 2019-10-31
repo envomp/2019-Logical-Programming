@@ -1,7 +1,7 @@
 .idea
 .pytest_cache
 venv
-
+out
 
 # Compiled source #
 ###################

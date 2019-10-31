@@ -149,11 +149,11 @@ min_time_list([Head, Head2|Tail], Minimum) :-
 
 trips_to_fastest(Start, End, Road, Price, BestTime) :-
     asserta(cheapest(100000)),
-    asserta(stops(1)),
+    asserta(stops(2)),
     stops(Stops),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), _),
     retractall(stops(Stops)),
-    asserta(stops(2)),
+    asserta(stops(3)),
     findall(SumTime, path4(Start, End, [Start], _, _, SumTime, _, 0), List),
     min_time_list(List, BestTime),
     !,
