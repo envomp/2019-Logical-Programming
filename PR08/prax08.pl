@@ -39,8 +39,8 @@ extinction(Pray, DeadSpieces, DeadCount) :- eats(Predator, Pray), extinction(Pre
 
 :-dynamic best/3.
 
-cycle :- asserta(best(bump, [], 0)), eats(_, Pray), extinction(Pray, TempSpieces, TempCount),
+cycle :- eats(_, Pray), extinction(Pray, TempSpieces, TempCount),
     ((best(_, _, Best), TempCount > Best, retractall(best(_, _, _)), asserta(best(Pray, TempSpieces, TempCount))); true).
 
-find_most_sensitive_species(Spieces, DeadSpieces, DeadCount) :- findall(_, cycle, _), best(Spieces, DeadSpieces, DeadCount).
+find_most_sensitive_species(Spieces, DeadSpieces, DeadCount) :- asserta(best(bump, [], 0)), findall(_, cycle, _), best(Spieces, DeadSpieces, DeadCount).
 
