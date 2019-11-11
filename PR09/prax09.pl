@@ -18,6 +18,7 @@
 
 liitlause --> (lihtlause ; liitlause), uhend, lihtlause.
 uhend --> [','] ; [ja].
+
 lihtlause --> nimisonafraas, tegusonafraas.
 nimisonafraas --> maarsonafraas, nimisona.
 maarsonafraas --> omadussona, maarsona ; [].
@@ -25,7 +26,8 @@ maarsona --> [kivile] ; [upakile].
 nimisona --> [sammal] ; [uhkus] ; [raha] ; [volad].
 omadussona --> [veerevale] ; [].
 tegusona --> [kasva] ; [ajab] ; [tuleb] ; [laheb] ; [jaavad].
-tegusonafraas --> tegusona, maarsonafraas.
+tegusonafraas --> meetod, tegusona, maarsonafraas.
+meetod --> [ei] ; [].
 
 %kusiaatom --> [kui].
 %kusialgus --> [kas].
