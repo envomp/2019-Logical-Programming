@@ -5,10 +5,10 @@ nimisonafraas --> maarsonafraas, nimisona.
 maarsonafraas --> omadussona, maarsona ; [].
 tegusonafraas --> meetod, tegusona, maarsonafraas.
 
-maarsona --> [ilusale].
-omadussona --> [ilus] ; [].
-tegusona --> [on] ; [tuleb] ; [laheb] ; [jaavad].
-nimisona --> [raha] ; [volad].
+maarsona --> [liiga].
+omadussona --> [lyhike], [].
+tegusona -->  [tingib] ; [pohjustab] ; [tuleb] ; [laheb] ; [jaavad].
+nimisona --> [raha] ; [volad] ; [habe].
 uhend --> [','] ; [ja] ; [voi].
 meetod --> [ei] ; [].
 
