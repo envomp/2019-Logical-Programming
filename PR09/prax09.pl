@@ -4,7 +4,7 @@ liitkusilause --> kusiaatom, lihtlisa, kusialgusliit, kusilisa, kusilopp.
 lihtlisa --> tuvi ; (tuvi, sidesona, lihtlisa).
 kusilisa --> tuvi ; (tuvi, sidesona, kusilisa).
 
-lihtlause --> lihtlisa, lihtlopp.
+lihtlause --> lihtlisa, (lihtlopp ; []).
 lihtkusilause --> kusialgus, tuvi, kusilopp.
 
 tuvi --> pretuvi, posttuvi.
@@ -24,7 +24,7 @@ liitnimisona --> [sobimatuse].
 omadussona --> [kole] ; [ilus] ; [lyhike] ; [must].
 maarsona --> [liiga].
 osastav --> [pakapiku] ; [tema].
-nimisona --> [inimene] ; [pakapiku] ; [tema] ; [habe] ; [jouluvanaks] ; [raha] ; [volad].
-tegusona --> [on] ; [kasvab] ; [elab] ; [tingib] ; [pohjustab] ; [tuleb] ; [laheb] ; [jaavad].
+nimisona --> [inimene] ; [pakapiku] ; [tema] ; [habe] ; [jouluvanaks] ; [raha] ; [volad] ; [koer] ; [kass].
+tegusona --> [on] ; [kasvab] ; [elab] ; [tingib] ; [pohjustab] ; [tuleb] ; [laheb] ; [jaavad] ; [haugub] ; [nurrub].
 sidesona --> [ja] ; [voi] ; [",sest"] ; [","].
 
