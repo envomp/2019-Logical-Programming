@@ -7,7 +7,7 @@ tegusonafraas --> meetod, tegusona, maarsonafraas.
 
 maarsona --> [kivile] ; [upakile].
 omadussona --> [veerevale] ; [].
-tegusona --> [kasva] ; [ajab] ; [tuleb] ; [laheb] ;
+tegusona --> [kasva] ; [ajab] ; [tuleb] ; [laheb] ; [jaavad].
 nimisona --> [sammal] ; [uhkus] ; [raha] ; [volad].
 uhend --> [','].
 meetod --> [ei] ; [].
@@ -29,7 +29,7 @@ meetod --> [ei] ; [].
 %nimisonafraas --> ([] ; omadussonafraas), nimisona.
 %omadussonafraas --> ([] ; maarsona), omadussona.
 %tegusonafraas --> ([]; [ei]), tegusona , ([] ; nimisonafraas ; omadussonafraas).
-
+%
 %kusiaatom --> [kui].
 %kusialgus --> [kas].
 %kusialgusliit --> ["siis kas"].
