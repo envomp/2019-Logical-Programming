@@ -27,3 +27,4 @@ osastav --> [pakapiku] ; [tema].
 nimisona --> [inimene] ; [pakapiku] ; [tema] ; [habe] ; [jouluvanaks] ; [raha] ; [volad].
 tegusona --> [on] ; [kasvab] ; [elab] ; [tingib] ; [pohjustab] ; [tuleb] ; [laheb] ; [jaavad].
 sidesona --> [ja] ; [voi] ; [",sest"] ; [","].
+
