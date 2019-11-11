@@ -7,7 +7,7 @@ kusilisa --> tuvi ; (tuvi, sidesona, kusilisa).
 lihtlause --> lihtlisa, (lihtlopp ; []).
 lihtkusilause --> kusialgus, tuvi, kusilopp.
 
-tuvi --> pretuvi, posttuvi.
+tuvi --> ([] ; nimisonafraas), ([] ; nimisonafraas), pretuvi, ([] ; nimisonafraas), ([] ; nimisonafraas), posttuvi.
 pretuvi --> (((([] ; osastav), nimisonafraas), tegusonafraas) ; (tegusonafraas)).
 posttuvi --> ([] ; nimisonafraas), ([] ; liitnimisona), ([] ; nimisonafraas), ([] ; nimisonafraas), ([] ; nimisonafraas).
 
