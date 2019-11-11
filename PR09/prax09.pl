@@ -1,3 +1,18 @@
+
+liitlause --> lihtlause, uhend, (lihtlause ; liitlause).
+lihtlause --> nimisonafraas, tegusonafraas.
+nimisonafraas --> maarsonafraas, nimisona.
+maarsonafraas --> omadussona, maarsona ; [].
+tegusonafraas --> meetod, tegusona, maarsonafraas.
+
+maarsona --> [ilusale].
+omadussona --> [ilus] ; [].
+tegusona --> [on] ; [tuleb] ; [laheb] ; [jaavad].
+nimisona --> [raha] ; [volad].
+uhend --> [','] ; [ja] ; [voi].
+meetod --> [ei] ; [].
+
+
 %liitlause --> (tuvi, sidesona, tuvi) ; (tuvi, sidesona, lihtlause).
 %liitkusilause --> kusiaatom, lihtlisa, kusialgusliit, kusilisa, kusilopp.
 %
@@ -14,20 +29,6 @@
 %nimisonafraas --> ([] ; omadussonafraas), nimisona.
 %omadussonafraas --> ([] ; maarsona), omadussona.
 %tegusonafraas --> ([]; [ei]), tegusona , ([] ; nimisonafraas ; omadussonafraas).
-
-
-liitlause --> (lihtlause ; liitlause), uhend, lihtlause.
-uhend --> [','] ; [ja].
-
-lihtlause --> nimisonafraas, tegusonafraas.
-nimisonafraas --> maarsonafraas, nimisona.
-maarsonafraas --> omadussona, maarsona ; [].
-maarsona --> [kivile] ; [upakile].
-nimisona --> [sammal] ; [uhkus] ; [raha] ; [volad].
-omadussona --> [veerevale] ; [].
-tegusona --> [kasva] ; [ajab] ; [tuleb] ; [laheb] ; [jaavad].
-tegusonafraas --> meetod, tegusona, maarsonafraas.
-meetod --> [ei] ; [].
 
 %kusiaatom --> [kui].
 %kusialgus --> [kas].
