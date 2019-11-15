@@ -58,7 +58,7 @@ kas_saab_votta(X,Y,Suund,X1,Y1,X2,Y2):-  % Votmine tagasi vasakule
 
 tee_kaik(X,Y,X1,Y1) :- retract(ruut(X, Y, C)), asserta(ruut(X1, Y1, C)).
 
-vota(X,Y,Suund,X1,Y1,X2,Y2) :- retract(ruut(X1, Y1, _), tee_kaik(X, Y, X2, Y2)).
+vota(X,Y,Suund,X1,Y1,X2,Y2) :- retract(ruut(X1, Y1, _)), tee_kaik(X, Y, X2, Y2).
 
 %--------------------------------
 kaimine(X,Y,Suund,X1,Y1):-
