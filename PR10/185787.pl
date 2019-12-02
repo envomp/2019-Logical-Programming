@@ -266,17 +266,16 @@ update_board(Side, B1, B2) :- remove_pieces(Side, B1, B2).
 remove_pieces(Side, B1, B2) :-
     (
         (
-            findall(fig(_, TempX, TempY), get_eaten(fig(man, TempX, TempY), B1, B2, Side), List),
+            findall(fig(_, TempX, TempY), get_eaten(fig(_, TempX, TempY), B1, B2, Side), List),
             List = [_|_],
-            write(List),
             move_pieces_after_remove(Side, B1, B2, X, Y, List),
             NewX is X + 1, NewY is Y + 1,
-            retract(ruut(NewY, NewX, _)), asserta(ruut(NewY, NewX, 0))
+            retract(ruut(NewY, NewX, _)), asserta(ruut(NewY, NewX, 0)) , write("Case 1")
         )
             ;
         (
             findall(fig(_, TempX, TempY), get_eaten(fig(man, TempX, TempY), B1, B2, Side), List),
-            List = [], move_pieces(Side, B1, B2)
+            List = [], move_pieces(Side, B1, B2), write("Case 2")
         )
     ).
 
@@ -316,8 +315,7 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
     % When cycle, look for
 
     best(_, RemX, RemY), abolish(best/3),
-    write(fig(a, RemX, RemY)),
-    NewX is X + 1, NewX1 is X1 + 1, NewY is Y + 1, NewY1 is Y1 + 1,
+    NewX is X + 1, NewY is Y + 1,
     (
         (
         TempX is RemX - X,
@@ -332,9 +330,8 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
             (TempY > 0, AfterY is NewY + (RemY - Y) + 1)
         ),
 
-            write(BEFORE), write(AFTER), nl,
             (
-                (BEFORE = AFTER,        write(NewX), write(NewY),nl,write(AfterY), write(AfterX),nl, move_answer_figure(NewY, NewX, AfterY, AfterX))
+                (BEFORE = AFTER, move_answer_figure(NewY, NewX, AfterY, AfterX))
                     ;
                 (not(BEFORE = AFTER),
                     ((((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), (move_answer_figure(NewY, NewX, AfterY, AfterX)))
