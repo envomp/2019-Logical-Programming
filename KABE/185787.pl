@@ -53,19 +53,34 @@ diagonal_is_free(List1, List2, X1, Y1, X2, Y2) :-
     list_absent(List2, fig(_, NextX, NextY)),
     diagonal_is_free(List1, List2, NextX, NextY, X2, Y2).
 
+must_eat(fig(man, _, _)) :-
+         true. %Nope.
+%        depth(Depth),
+%        continueEating(X, Y),
+%        look_ahead_on(FirstStep),
+%        NewX is X - 1, NewY is Y - 1,
+%        (
+%            (not((X = 0 ; Y = 0)), FirstStep = Depth, Y1 = NewX, X1 = NewY)
+%                ;
+%            (not((not((X = 0 ; Y = 0)), FirstStep = Depth)))
+%        ).
+
 % Possible moves for man. (X1, Y1) - starting position, (X2, Y2) - destination position.
 possible_move(white, fig(man, X1, Y1), fig(Type, X2, Y2)) :-
+    must_eat(fig(man, X1, Y1)),
     Y2 is (Y1 + 1), Y2 =< 7,
     (X2 is X1 + 1 ; X2 is X1 - 1), X2 >= 0, X2 =< 7,
     ( (Y2 = 7, Type = king) ; (Y2 < 7, Type = man) ).
 
 possible_move(black, fig(man, X1, Y1), fig(Type, X2, Y2)) :-
+    must_eat(fig(man, X1, Y1)),
     Y2 is (Y1 - 1), Y2 >= 0,
     (X2 is X1 + 1 ; X2 is X1 - 1), X2 =< 7, X2 >= 0,
     ( (Y2 = 0, Type = king) ; (Y2 > 0, Type = man) ).
 
 % Possible moves for king.
 possible_move(_, fig(king, X1, Y1), fig(king, X2, Y2)) :-
+    must_eat(fig(man, X1, Y1)),
     fig(king, X2, Y2), X2 >= 0, X2 =< 7, Y2 >= 0, Y2 =< 7,
     X1 \= X2,  Y1 \= Y2,
     % Can move diagonally (in any direction)
@@ -245,16 +260,18 @@ find_best_move(Side, NodeType, [Board1 | Tail], BestBoard, BestScore, Depth, Alp
 
 minmax(Side, _, Board, Board, Score, _, _, _) :-
     possible_moves_list(Side, Board, []),
-        evaluate_board(Board, Score), !.
+    evaluate_board(Board, Score), !.
 
 minmax(Side, NodeType, Board, BestBoard, BestScore, Depth, Alpha, Beta) :-
     possible_moves_list(Side, Board, PossibleMoves),
     find_best_move(Side, NodeType, PossibleMoves, BestBoard, BestScore, Depth, Alpha, Beta).
 
 smart_move(white, Board, NewBoard) :-
-    look_ahead_on(Depth), minmax(white, max, Board, NewBoard, _, Depth, -100000, 100000).
+    depth(Depth),
+    minmax(white, max, Board, NewBoard, _, Depth, -100000, 100000).
 smart_move(black, Board, NewBoard) :-
-    look_ahead_on(Depth), minmax(black, min, Board, NewBoard, _, Depth, -100000, 100000).
+    depth(Depth),
+    minmax(black, min, Board, NewBoard, _, Depth, -100000, 100000).
 
 play_move(Side) :-
     make_board(B1),
@@ -312,8 +329,6 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
     get_move(fig(BEFORE,X,Y), B2, B1, Side),
     closestRem(Rems, X, Y),
 
-    % When cycle, look for
-
     best(_, RemX, RemY), abolish(best/3),
     NewX is X + 1, NewY is Y + 1,
     (
@@ -334,10 +349,10 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
                 (BEFORE = AFTER, move_answer_figure(NewY, NewX, AfterY, AfterX))
                     ;
                 (not(BEFORE = AFTER),
-                    ((((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), (move_answer_figure(NewY, NewX, AfterY, AfterX)))
+                    ((not(((Side = black, AfterY = 1) ; (Side = white, AfterY = 8))),write(AfterY),nl, (move_answer_figure(NewY, NewX, AfterY, AfterX)))
                         ;
-                        (not((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)),
-                            (Temp1 is Y - Y1, Temp2 is X - X1, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2),
+                        (((Side = black, AfterY = 1) ; (Side = white, AfterY = 8)),
+                            (Temp1 is NewY - AfterY, Temp2 is NewX - AfterX, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2), write(Diagonal1),nl, write(Diagonal2),nl,
                                 (
                                     (Diagonal1 = Diagonal2, Diagonal2 = 2, move_answer_figure_and_update(NewY, NewX, AfterY, AfterX))
                                         ;
@@ -392,10 +407,16 @@ transfer_whites(White) :-
     ).
 
 :- module(iaib185787).
+:- dynamic continueEating/2.
+:- dynamic depth/1.
 
-iaib185787(Color, _, _) :-
+iaib185787(Color, X, Y) :-
     (
-        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true)
+        asserta(continueEating(X, Y)),
+        look_ahead_on(Depth),
+        asserta(depth(Depth)),
+        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true),
+        abolish(continueEating/2)
     ).
 
 iaib185787(_, _, _).
