@@ -8,8 +8,8 @@
 %valged(human)  % valgetega mängib inimine
 %mustad(k1)     % mustadega mängib programm k1
 
-valged(human).		% Valged
-mustad(human).		% Mustad
+valged(iaib185787).		% Valged
+mustad(iaib185787).		% Mustad
 
 % Seejärel laadida mällu see programm (graphicArbiter) ja võistlevad kabeprogrammid.
 %                                                         _________________________

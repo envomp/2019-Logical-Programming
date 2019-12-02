@@ -108,13 +108,13 @@ käiv_nupp(Color,(X0,Y0),(X2,Y2),Võttis):-
 	ruut_old(X2,Y2,0), ruut(X2,Y2,ColorN),		% leia sihtruut
 	kas_sai_tammiks(Color,(X2,Y2),ColorN),		% võtmisega võib saada tammiks
 	partner_color(Color,ColorP),
-	(sama_värv(ColorP,ColorPP),ruut_old(X1,Y1,ColorPP),ruut(X1,Y1,0),Võttis=(X1,Y1);Võttis=[]),!.
+	(sama_värv(ColorP,ColorPP),ruut_old(X1,Y1,ColorPP),ruut(X1,Y1,0),Võttis = (X1,Y1); Võttis=[]),!.
 käiv_nupp(Color,(X0,Y0),(X2,Y2),Võttis):-		% kui nupp on juba tamm
 	Color10 is Color * 10,
 	ruut_old(X0,Y0,Color10),ruut(X0,Y0,0),		% leia käiv nupp
 	ruut_old(X2,Y2,0), ruut(X2,Y2,Color10),		% leia sihtruut
 	partner_color(Color,ColorP),
-	(sama_värv(ColorP,ColorPP),ruut_old(X1,Y1,ColorPP),ruut(X1,Y1,0),Võttis=(X1,Y1);Võttis=[]),!.
+	(sama_värv(ColorP,ColorPP),ruut_old(X1,Y1,ColorPP),ruut(X1,Y1,0),Võttis = (X1,Y1);Võttis=[]),!.
 %---------------------------
 sama_värv(1,10).
 sama_värv(10,1).
@@ -235,7 +235,7 @@ tingimus(X0,Y0,X,Y):-
 	X =:=Y+X0-Y0.
 tingimus(X0,Y0,X,Y):-
 	kas_laual(X0,Y0),
-	X =:= -Y+(X0+Y0).
+	X =:= -Y + (X0+Y0).
 
 %--------------------------------Vabade ruutude leidmine, kuhu tamm saab käia-------------------------
 % Front liigub pikki vabasid ruute nupust sammu kaupa  kaugemale ja tagastab vabade ruutude listi

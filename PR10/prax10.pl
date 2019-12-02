@@ -1,13 +1,13 @@
+:- module(iaib185787, [iaib185787/3]).
 
-:- dynamic(ruut/3).
-
-main(MyColor):-
+iaib185787(MyColor, X, Y):-
     ruut(X,Y, MyColor),
     nl, write([MyColor, 'Nupp ', ruudul, X,Y]),
     leia_suund(MyColor,Suund),
     kaigu_variandid(X,Y,Suund,X1,Y1),
     !.
-main(_).
+
+iaib185787(_, _, _).
 
 leia_suund(1,1):- !.
 leia_suund(2,-1).
