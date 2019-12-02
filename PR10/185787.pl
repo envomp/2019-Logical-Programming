@@ -379,8 +379,8 @@ remove_pieces(Side, B1, B2) :-
         (
             findall(fig(_, TempX, TempY), get_eaten(fig(man, TempX, TempY), B1, B2, Side), List),
             List = [_|_],
+            write(List),
             move_pieces_after_remove(Side, B1, B2, X, Y, List),
-            write(2),
             NewX is X + 1, NewY is Y + 1,
             retract(ruut(NewY, NewX, _)), asserta(ruut(NewY, NewX, 0))
         )
@@ -406,9 +406,6 @@ move_pieces(Side, B1, B2) :-
         (not(BEFORE = AFTER), move_answer_figure_and_update(NewY, NewX, NewY1, NewX1))
     ).
 
-
-testClosest(A, B, C) :- closestRem([fig(a, 1,1), fig(b,3,3),fig(c,5,5)], 2, 3), best(A, B, C).
-
 :- dynamic best/3.
 closestRem([], _, _) :- asserta(best(1000, 0, 0)).
 closestRem([fig(_, X, Y)|Tail], X1, Y1) :- closestRem(Tail, X1, Y1),
@@ -430,18 +427,30 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
     % When cycle, look for
 
     best(_, RemX, RemY), abolish(best/3),
+    write(fig(a, RemX, RemY)),
     NewX is X + 1, NewX1 is X1 + 1, NewY is Y + 1, NewY1 is Y1 + 1,
-    DeltaX is X - X1, abs(DeltaX, AbsX), DeltaY is Y - Y1, abs(DeltaY, AbsY),
     (
         (
-        AfterX is X + 2 * (RemX - X) + 1, AfterY is Y + 2 * (RemY - Y) + 1,
+        TempX is RemX - X,
+        (
+            (TempX < 0, AfterX is NewX + (RemX - X) - 1)
+                ;
+            (TempX > 0, AfterX is NewX + (RemX - X) + 1)
+        ), TempY is RemY - Y,
+        (
+            (TempY < 0, AfterY is NewY + (RemY - Y) - 1)
+                ;
+            (TempY > 0, AfterY is NewY + (RemY - Y) + 1)
+        ),
+
+            write(BEFORE), write(AFTER), nl,
             (
-                (BEFORE = AFTER, move_answer_figure(NewY, NewX, AfterY, AfterX))
+                (BEFORE = AFTER,        write(NewX), write(NewY),nl,write(AfterY), write(AfterX),nl, move_answer_figure(NewY, NewX, AfterY, AfterX))
                     ;
                 (not(BEFORE = AFTER),
                     ((((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), (move_answer_figure(NewY, NewX, AfterY, AfterX)))
                         ;
-                        (not((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), write("Tammistumine"),
+                        (not((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)),
                             (Temp1 is Y - Y1, Temp2 is X - X1, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2),
                                 (
                                     (Diagonal1 = Diagonal2, Diagonal2 = 2, move_answer_figure_and_update(NewY, NewX, AfterY, AfterX))
@@ -497,13 +506,10 @@ transfer_whites(White) :-
     ).
 
 :- module(iaib185787).
-:- dynamic(goMore/2).
 
-iaib185787(Color, X, Y) :-
+iaib185787(Color, _, _) :-
     (
-        asserta(goMore(X, Y)),
-        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true),
-        abolish(goMore)
+        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true)
     ).
 
 iaib185787(_, _, _).
