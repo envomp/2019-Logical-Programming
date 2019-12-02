@@ -4,7 +4,7 @@
 
 % Number of possible consecutive moves to check for making decision about next move.
 % Be careful with this value since increasing it will significantly slow down the game.
-look_ahead_on(4).
+look_ahead_on(2).
 
 % Initial positions for all figures.
 % You can change these two lists to start game from some specific combination.
@@ -86,50 +86,6 @@ diagonal_is_free(List1, List2, X1, Y1, X2, Y2) :-
     list_absent(List2, fig(_, NextX, NextY)),
     % And check the rest cells
     diagonal_is_free(List1, List2, NextX, NextY, X2, Y2).
-
-
-% ----------------------------------------------------------------------------------------------------------------------
-% Set of predicates used to print board with ASCII symbols
-% ----------------------------------------------------------------------------------------------------------------------
-
-% Print any symbol inside cell. Also prints separator and vertical cells numbering.
-print_cell_symbol(X, Y, Symbol) :- X  = 7, write(' | '), write(Symbol), write(' | '), write(Y),
-                                   write('\n  ---------------------------------\n').
-print_cell_symbol(X, _, Symbol) :- X \= 7, X \= 0, write(' | '), write(Symbol).
-print_cell_symbol(X, Y, Symbol) :- X  = 0, write(Y), write(' | '), write(Symbol).
-
-% Print empty cell (for black and white cells).
-print_empty_cell(X, Y) :- Sum is (X + Y), Reminder is (Sum mod 2), Reminder  = 0,
-                          print_cell_symbol(X, Y, '.'). % Black cell
-print_empty_cell(X, Y) :- Sum is (X + Y), Reminder is (Sum mod 2), Reminder \= 0,
-                          print_cell_symbol(X, Y, ' '). % White cell
-
-% Generic predicates to print cell with appropriate symbol inside.
-print_cell(board(Black, _), X, Y)       :- (list_member(Black, fig(man,  X, Y)), print_cell_symbol(X, Y, 'o')) ;
-                                           (list_member(Black, fig(king, X, Y)), print_cell_symbol(X, Y, 'O')).
-print_cell(board(_, White), X, Y)       :- (list_member(White, fig(man,  X, Y)), print_cell_symbol(X, Y, 'x')) ;
-                                           (list_member(White, fig(king, X, Y)), print_cell_symbol(X, Y, 'X')).
-print_cell(board(_, _), X, Y)           :- \+ (pos(X, Y)), print_empty_cell(X, Y).
-print_cell(board(Black, White), X, Y)   :- list_absent(Black, fig(_, X, Y)), list_absent(White, fig(_, X, Y)),
-                                           print_empty_cell(X, Y).
-
-% Recursive predicate to print all cells.
-print_board_internal(board(Black, White), 0) :- print_cell(board(Black, White), 7, 0).
-print_board_internal(board(Black, White), N) :-
-    N > 0,
-    Y is (N div 8),
-    X is (7 - (N mod 8)),
-    print_cell(board(Black, White), X, Y),
-    Next is (N - 1),
-    print_board_internal(board(Black, White), Next).
-
-% Print whole board (64 cells)
-print_board(Board) :-
-    write('    0   1   2   3   4   5   6   7  \n'),
-    write('  ---------------------------------\n'),
-    print_board_internal(Board, 63),
-    write('    0   1   2   3   4   5   6   7  \n'), !.
-
 
 % ----------------------------------------------------------------------------------------------------------------------
 % Definition of moves
@@ -412,24 +368,28 @@ smart_move(black, Board, NewBoard) :-
 
 
 play_move(Side) :-
-    dumb,
     make_board(B1),
-    print_board(B2), nl,
     smart_move(Side, B1, B2),
     update_board(Side, B1, B2).
-
-dumb :- findall(ruut(X, Y, C) ,ruut(X, Y, C), List), write(List), nl.
 
 update_board(Side, B1, B2) :- remove_pieces(Side, B1, B2).
 
 remove_pieces(Side, B1, B2) :-
-    ((get_eaten(fig(man,X,Y), B1, B2, Side),
-    NewX is X + 1, NewY is Y + 1,
-    retract(ruut(NewY, NewX, _)), asserta(ruut(NewY, NewX, 0)),
-    move_pieces_after_remove(Side, B1, B2, X, Y))
-    ;
-    (move_pieces(Side, B1, B2))).
-
+    (
+        (
+            findall(fig(_, TempX, TempY), get_eaten(fig(man, TempX, TempY), B1, B2, Side), List),
+            List = [_|_],
+            move_pieces_after_remove(Side, B1, B2, X, Y, List),
+            write(2),
+            NewX is X + 1, NewY is Y + 1,
+            retract(ruut(NewY, NewX, _)), asserta(ruut(NewY, NewX, 0))
+        )
+            ;
+        (
+            findall(fig(_, TempX, TempY), get_eaten(fig(man, TempX, TempY), B1, B2, Side), List),
+            List = [], move_pieces(Side, B1, B2)
+        )
+    ).
 
 get_eaten(Figure, board(Blacks1, Whites1), board(Blacks2, Whites2), Side) :-
         ( Side = black, member(Figure, Whites1), not(member(Figure, Whites2)) ) ;
@@ -437,45 +397,113 @@ get_eaten(Figure, board(Blacks1, Whites1), board(Blacks2, Whites2), Side) :-
 
 
 move_pieces(Side, B1, B2) :-
-    get_move(fig(man,X1,Y1), B1, B2, Side),
-    get_move(fig(man,X,Y), B2, B1, Side),
+    get_move(fig(BEFORE, X1, Y1), B1, B2, Side),
+    get_move(fig(AFTER, X, Y), B2, B1, Side),
     NewX is X + 1, NewX1 is X1 + 1, NewY is Y + 1, NewY1 is Y1 + 1,
-    move_figure(NewY, NewX, NewY1, NewX1).
+    (
+        (BEFORE = AFTER, move_answer_figure(NewY, NewX, NewY1, NewX1))
+            ;
+        (not(BEFORE = AFTER), move_answer_figure_and_update(NewY, NewX, NewY1, NewX1))
+    ).
 
 
-move_pieces_after_remove(Side, B1, B2, RemX, RemY) :-
-    get_move(fig(BEFORE,X1,Y1), B1, B2, Side),
-    get_move(fig(AFTER,X,Y), B2, B1, Side),
+testClosest(A, B, C) :- closestRem([fig(a, 1,1), fig(b,3,3),fig(c,5,5)], 2, 3), best(A, B, C).
+
+:- dynamic best/3.
+closestRem([], _, _) :- asserta(best(1000, 0, 0)).
+closestRem([fig(_, X, Y)|Tail], X1, Y1) :- closestRem(Tail, X1, Y1),
+    TX1 is X - X1, pow(TX1, 2, TempX),
+    TY1 is Y - Y1, pow(TY1, 2, TempY),
+    Temp is TempX + TempY,
+    retract(best(Last, LastX, LastY)),
+    (
+        (Temp < Last, asserta(best(Temp, X, Y)))
+            ;
+        (Temp >= Last, asserta(best(Last, LastX, LastY)))
+    ).
+
+move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
+    get_move(fig(AFTER,X1,Y1), B1, B2, Side),
+    get_move(fig(BEFORE,X,Y), B2, B1, Side),
+    closestRem(Rems, X, Y),
+
+    % When cycle, look for
+
+    best(_, RemX, RemY), abolish(best/3),
     NewX is X + 1, NewX1 is X1 + 1, NewY is Y + 1, NewY1 is Y1 + 1,
     DeltaX is X - X1, abs(DeltaX, AbsX), DeltaY is Y - Y1, abs(DeltaY, AbsY),
-    ((AbsY = 2, AbsX = 2, move_figure(NewY, NewX, NewY1, NewX1)) ;
-        ((not(AbsY = 2); not(AbsX = 2)), AfterX is X + 2 * (RemX - X) + 1, AfterY is Y + 2 * (RemY - Y) + 1,
-            ((BEFORE = AFTER, move_figure(NewY, NewX, AfterY, AfterX)) ; (not(BEFORE = AFTER), move_figure_and_update(NewY, NewX, AfterY, AfterX)))
+    (
+        (
+        AfterX is X + 2 * (RemX - X) + 1, AfterY is Y + 2 * (RemY - Y) + 1,
+            (
+                (BEFORE = AFTER, move_answer_figure(NewY, NewX, AfterY, AfterX))
+                    ;
+                (not(BEFORE = AFTER),
+                    ((((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), (move_answer_figure(NewY, NewX, AfterY, AfterX)))
+                        ;
+                        (not((Side = black, AfterX = 1) ; (Side = white, AfterX = 8)), write("Tammistumine"),
+                            (Temp1 is Y - Y1, Temp2 is X - X1, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2),
+                                (
+                                    (Diagonal1 = Diagonal2, Diagonal2 = 2, move_answer_figure_and_update(NewY, NewX, AfterY, AfterX))
+                                        ;
+                                    (not((Diagonal1 = Diagonal2, Diagonal2 = 2)), move_answer_figure(NewY, NewX, AfterY, AfterX))
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
      ).
 
-move_figure_and_update(X, Y, X1, Y1) :- retract(ruut(X1, Y1, _)), retract(ruut(X, Y, C)), asserta(ruut(X, Y, 0)), NewC is C * 10, asserta(ruut(X1, Y1, NewC)).
-move_figure(X, Y, X1, Y1) :- retract(ruut(X1, Y1, _)), retract(ruut(X, Y, C)), asserta(ruut(X, Y, 0)), asserta(ruut(X1, Y1, C)).
+move_answer_figure_and_update(X, Y, X1, Y1) :-
+    retract(ruut(X1, Y1, _)),
+    retract(ruut(X, Y, C)),
+    asserta(ruut(X, Y, 0)), NewC is C * 10,
+    asserta(ruut(X1, Y1, NewC)).
+
+move_answer_figure(X, Y, X1, Y1) :-
+    retract(ruut(X1, Y1, _)),
+    retract(ruut(X, Y, C)),
+    asserta(ruut(X, Y, 0)),
+    asserta(ruut(X1, Y1, C)).
 
 get_move(Figure, board(Blacks1, Whites1), board(Blacks2, Whites2), Side) :-
-    ( Side = black, member(Figure, Blacks2), not(member(Figure, Blacks1)) ) ;
+    ( Side = black, member(Figure, Blacks2), not(member(Figure, Blacks1)) )
+        ;
     ( Side = white, member(Figure, Whites2), not(member(Figure, Whites1))).
 
 make_board(board(Blacks, Whites)) :- make_blacks(Blacks), make_whites(Whites).
 
-make_blacks(Blacks) :- findall(Black, transfer_black(Black), Blacks).
+make_blacks(Blacks) :-
+    findall(Black, transfer_black(Black), Blacks).
 
-transfer_black(Black) :- ruut(Y1, X1, C), X is X1 - 1, Y is Y1 - 1, ((C = 2, Black = fig(man, X, Y)) ; (C = 20, Black = fig(king, X, Y))).
+transfer_black(Black) :-
+    ruut(Y1, X1, C), X is X1 - 1, Y is Y1 - 1,
+    (
+        (C = 2, Black = fig(man, X, Y))
+            ;
+        (C = 20, Black = fig(king, X, Y))).
 
-make_whites(Whites) :- findall(White, transfer_whites(White), Whites).
+make_whites(Whites) :-
+    findall(White, transfer_whites(White), Whites).
 
-transfer_whites(White) :- ruut(Y1, X1, C), X is X1 - 1, Y is Y1 - 1, ((C = 1, White = fig(man, X, Y)) ; (C = 10, White = fig(king, X, Y))).
+transfer_whites(White) :-
+    ruut(Y1, X1, C), X is X1 - 1, Y is Y1 - 1,
+    (
+        (C = 1, White = fig(man, X, Y))
+            ;
+        (C = 10, White = fig(king, X, Y))
+    ).
 
 :- module(iaib185787).
-% Main goal to start the game.
-iaib185787(Color, X, Y) :- %TODO use given
+:- dynamic(goMore/2).
+
+iaib185787(Color, X, Y) :-
     (
-        (Color = 1, play_move(white)) ; (Color = 2, play_move(black))
+        asserta(goMore(X, Y)),
+        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true),
+        abolish(goMore)
     ).
 
 iaib185787(_, _, _).
