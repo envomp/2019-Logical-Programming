@@ -8,8 +8,8 @@
 %valged(human)  % valgetega mängib inimine
 %mustad(k1)     % mustadega mängib programm k1
 
-valged(human).		% Valged
-mustad(iaib185787).		% Mustad
+valged(iaib185787).		% Valged
+mustad(human).		% Mustad
 
 % Seejärel laadida mällu see programm (graphicArbiter) ja võistlevad kabeprogrammid.
 %                                                         _________________________
@@ -617,7 +617,7 @@ end_condition:-
 	fixpoint(yes).
 end_condition:-	
 	move_count(M), 
-	M >= 14.
+	M >= 20.
 
 %================== Kontrolli püsipunkti===========================
 check_fp:-
@@ -693,7 +693,7 @@ partner_color(20, 10).
 %============================= Announce_winner =====================================
 announce_winner(_):-	% Kui viik
 		move_count(M), 
-		M >= 14,
+		M >= 20,
 		nl, write('The game is a draw (no winner). '),
 		arv(NNN),nl,write('Total number of moves is '), write(NNN).
 announce_winner(Color):-

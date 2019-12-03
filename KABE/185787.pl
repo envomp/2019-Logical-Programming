@@ -415,7 +415,11 @@ iaib185787(Color, X, Y) :-
         asserta(continueEating(X, Y)),
         look_ahead_on(Depth),
         asserta(depth(Depth)),
-        (Color = 1, play_move(white)) ; (Color = 2, play_move(black); true),
+        ((Color = 1, write("WHITE"), nl, play_move(white))
+            ;
+        (Color = 2, write("BLACK"), nl, play_move(black))
+            ;
+        true),
         abolish(continueEating/2)
     ).
 
