@@ -1,3 +1,4 @@
+:- module(iaib185787, [iaib185787/3]).
 
 look_ahead_on(5).
 
@@ -6,7 +7,9 @@ evaluate_board(board(Black, White), Score) :-
     list_count(Black, fig(king, _, _), BlackKings),
     list_count(White, fig(man, _, _), WhiteMans),
     list_count(White, fig(king, _, _), WhiteKings),
-    Score is (WhiteMans + 5 * WhiteKings - BlackMans - 5 * BlackKings).
+    evaluate_pieces(White, WhiteMiddle),
+    evaluate_pieces(Black, BlackMiddle),
+    Score is (10 * WhiteMans + 50 * WhiteKings + WhiteMiddle - 10 * BlackMans - 50 * BlackKings - BlackMiddle).
 
 list_member(List, Member)               :- member(Member, List).
 list_append(List1, List2, Result)       :- append(List1, List2, Result).
@@ -24,6 +27,16 @@ list_count([FirstElement | Tail], Element, Occurrences) :-
     Occurrences is (Tmp + 1), !.
 list_count([_ | Tail], Element, Occurrences) :- list_count(Tail, Element, Occurrences).
 
+% Figure position evaluation. Just checking for center of board atm.
+
+evaluate_pieces([], 0).
+evaluate_pieces([fig(_, Y, X) | Tail], Score) :-
+    evaluate_pieces(Tail, Tmp),
+    (
+        (X >= 3, X =< 4, Y >= 2, Y =< 5, Score is (Tmp + 1))
+            ;
+        (Score is Tmp)
+    ), !.
 
 % There are two sides: Black and White.
 side(white).
@@ -53,34 +66,19 @@ diagonal_is_free(List1, List2, X1, Y1, X2, Y2) :-
     list_absent(List2, fig(_, NextX, NextY)),
     diagonal_is_free(List1, List2, NextX, NextY, X2, Y2).
 
-must_eat(fig(man, _, _)) :-
-         true. %Nope.
-%        depth(Depth),
-%        continueEating(X, Y),
-%        look_ahead_on(FirstStep),
-%        NewX is X - 1, NewY is Y - 1,
-%        (
-%            (not((X = 0 ; Y = 0)), FirstStep = Depth, Y1 = NewX, X1 = NewY)
-%                ;
-%            (not((not((X = 0 ; Y = 0)), FirstStep = Depth)))
-%        ).
-
 % Possible moves for man. (X1, Y1) - starting position, (X2, Y2) - destination position.
 possible_move(white, fig(man, X1, Y1), fig(Type, X2, Y2)) :-
-    must_eat(fig(man, X1, Y1)),
     Y2 is (Y1 + 1), Y2 =< 7,
     (X2 is X1 + 1 ; X2 is X1 - 1), X2 >= 0, X2 =< 7,
     ( (Y2 = 7, Type = king) ; (Y2 < 7, Type = man) ).
 
 possible_move(black, fig(man, X1, Y1), fig(Type, X2, Y2)) :-
-    must_eat(fig(man, X1, Y1)),
     Y2 is (Y1 - 1), Y2 >= 0,
     (X2 is X1 + 1 ; X2 is X1 - 1), X2 =< 7, X2 >= 0,
     ( (Y2 = 0, Type = king) ; (Y2 > 0, Type = man) ).
 
 % Possible moves for king.
 possible_move(_, fig(king, X1, Y1), fig(king, X2, Y2)) :-
-    must_eat(fig(man, X1, Y1)),
     fig(king, X2, Y2), X2 >= 0, X2 =< 7, Y2 >= 0, Y2 =< 7,
     X1 \= X2,  Y1 \= Y2,
     % Can move diagonally (in any direction)
@@ -116,7 +114,28 @@ diagonal_positions(pos(X, Y), Dx, Dy, [pos(X, Y) | Tail]) :-
     NextX is (X + Dx), NextY is (Y + Dy),
     diagonal_positions(pos(NextX, NextY), Dx, Dy, Tail).
 
-possible_capture(Side, fig(man, X1, Y1), fig(_, X2, Y2), fig(Type, X3, Y3)) :-
+
+must_eat(fig(_, X1, Y1), Depth) :-
+        continueEating(X, Y),
+        (
+            (X = 0 , Y = 0)
+                ;
+            (
+             not((X = 0, Y = 0)),
+             NewX is X - 1,
+             NewY is Y - 1,
+             look_ahead_on(InitialDepth),
+             Depth == InitialDepth,
+%             write(X1),write(NewY),nl,
+%             write(Y1),write(NewX),nl,
+%             write(Depth),nl,nl,
+             Y1 == NewX,
+             X1 == NewY)
+        ).
+
+% take with man
+possible_capture(Side, fig(man, X1, Y1), fig(_, X2, Y2), fig(Type, X3, Y3), Depth) :-
+    must_eat(fig(man, X1, Y1), Depth),
     Dx is (X2 - X1), Dy is (Y2 - Y1),
     AbsDx is abs(Dx), AbsDy is abs(Dy),
     AbsDx = 1, AbsDy = 1,
@@ -127,7 +146,9 @@ possible_capture(Side, fig(man, X1, Y1), fig(_, X2, Y2), fig(Type, X3, Y3)) :-
         ( Side = black, ((Y3 = 0, Type = king) ; (Y3 > 0, Type = man)) )
     ).
 
-possible_capture(_, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3)) :-
+% take with king
+possible_capture(_, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3), Depth) :-
+    must_eat(fig(king, X1, Y1), Depth),
     Sum1 is (X1 + Y1), Sum2 is (X2 + Y2),
     Dif1 is (X1 - Y1), Dif2 is (X2 - Y2),
     (Sum1 = Sum2 ; Dif1 = Dif2),
@@ -135,6 +156,8 @@ possible_capture(_, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3)) :-
     NextX is (X2 + Dx), NextY is (Y2 + Dy),
     diagonal_positions(pos(NextX, NextY), Dx, Dy, AllowableDestPositions),
     list_member(AllowableDestPositions, pos(X3, Y3)).
+
+
 
 way_for_capture_is_free(CapturingList, CapturedList, fig(man, _, _), fig(_, _, _), fig(_, X3, Y3)) :-
     list_absent(CapturingList, fig(_, X3, Y3)),
@@ -146,63 +169,63 @@ way_for_capture_is_free(CapturingList, CapturedList, fig(king, X1, Y1), fig(_, X
     diagonal_is_free(CapturingList, CapturedList, X1, Y1, PrevX, PrevY),
     diagonal_is_free(CapturingList, CapturedList, X2, Y2, X3, Y3).
 
-potential_intermediate_king_pos(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3)) :-
+potential_intermediate_king_pos(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3), Depth) :-
     list_member(CapturedList, fig(_, X2, Y2)),
-    possible_capture(Side, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3)),
+    possible_capture(Side, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3), Depth),
     way_for_capture_is_free(CapturingList, CapturedList, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3)),
     list_absent(CapturedFiguresList, fig(_, X2, Y2)).
 
-potential_intermediate_king_pos_with_capture(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3)) :-
-    potential_intermediate_king_pos(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3)),
+potential_intermediate_king_pos_with_capture(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3), Depth) :-
+    potential_intermediate_king_pos(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), pos(X3, Y3), Depth),
     list_delete_one(CapturingList, fig(king, X1, Y1), TmpCapturingList),
     list_append(TmpCapturingList, [fig(king, X3, Y3)], NewCapturingList),
     list_append(CapturedFiguresList, [fig(man, X2, Y2)], NewCapturedFiguresList),
-    potential_intermediate_king_pos(Side, NewCapturingList, CapturedList, NewCapturedFiguresList, pos(X3, Y3), _, _).
+    potential_intermediate_king_pos(Side, NewCapturingList, CapturedList, NewCapturedFiguresList, pos(X3, Y3), _, _, Depth).
 
-potential_intermediate_king_pos_list(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), List) :-
-    findall(Position, potential_intermediate_king_pos_with_capture(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), Position), List).
+potential_intermediate_king_pos_list(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), List, Depth) :-
+    findall(Position, potential_intermediate_king_pos_with_capture(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), Position, Depth), List).
 
-allowable_intermediate_capture_pos(_, _, _, _, fig(man, _, _), _, _) :- !.
+allowable_intermediate_capture_pos(_, _, _, _, fig(man, _, _), _, _, _) :- !.
 
-allowable_intermediate_capture_pos(Side, CapturingList, CapturedList, CapturedFiguresList, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3)) :-
-    potential_intermediate_king_pos_list(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), IntermediatePositionsWithCapture),
+allowable_intermediate_capture_pos(Side, CapturingList, CapturedList, CapturedFiguresList, fig(king, X1, Y1), fig(_, X2, Y2), fig(king, X3, Y3), Depth) :-
+    potential_intermediate_king_pos_list(Side, CapturingList, CapturedList, CapturedFiguresList, pos(X1, Y1), pos(X2, Y2), IntermediatePositionsWithCapture, Depth),
     (
         (IntermediatePositionsWithCapture = [], true, !) ;
         (list_member(IntermediatePositionsWithCapture, pos(X3, Y3)), !)
     ).
 
-capture_single_figure(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure) :-
+capture_single_figure(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure, Depth) :-
     list_delete_one(CapturingList, CapturingFigure, TmpCapturingList),
     list_member(CapturedList, CapturedFigure),
-    possible_capture(Side, CapturingFigure, CapturedFigure, NewCapturingFigure),
+    possible_capture(Side, CapturingFigure, CapturedFigure, NewCapturingFigure, Depth),
     way_for_capture_is_free(CapturingList, CapturedList, CapturingFigure, CapturedFigure, NewCapturingFigure),
     CapturedFigure = fig(_, X2, Y2),
-    allowable_intermediate_capture_pos(Side, CapturingList, CapturedList, CapturedFiguresList, CapturingFigure, CapturedFigure, NewCapturingFigure),
+    allowable_intermediate_capture_pos(Side, CapturingList, CapturedList, CapturedFiguresList, CapturingFigure, CapturedFigure, NewCapturingFigure, Depth),
     list_absent(CapturedFiguresList, fig(_, X2, Y2)),
     list_append(TmpCapturingList, [NewCapturingFigure], NewCapturingList),
     list_append(CapturedFiguresList, [CapturedFigure], NewCapturedFiguresList).
 
-capture_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure) :-
-    capture_single_figure(Side, CapturingList, CapturedList, TmpCapturingList, CapturedFiguresList, TmpCapturedFiguresList, CapturingFigure, TmpCapturingFigure),
-    capture_multiple_figures(Side, TmpCapturingList, CapturedList, NewCapturingList, TmpCapturedFiguresList, NewCapturedFiguresList, TmpCapturingFigure, NewCapturingFigure).
+capture_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure, Depth) :-
+    capture_single_figure(Side, CapturingList, CapturedList, TmpCapturingList, CapturedFiguresList, TmpCapturedFiguresList, CapturingFigure, TmpCapturingFigure, Depth),
+    capture_multiple_figures(Side, TmpCapturingList, CapturedList, NewCapturingList, TmpCapturedFiguresList, NewCapturedFiguresList, TmpCapturingFigure, NewCapturingFigure, Depth).
 
-capture_multiple_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure) :-
-    capture_single_figure(Side, CapturingList, CapturedList, _, CapturedFiguresList, _, CapturingFigure, _), !,
-    capture_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure).
-capture_multiple_figures(_, CapturingList, _, CapturingList, CapturedList, CapturedList, CapturingFigure, CapturingFigure).
+capture_multiple_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure, Depth) :-
+    capture_single_figure(Side, CapturingList, CapturedList, _, CapturedFiguresList, _, CapturingFigure, _, Depth), !,
+    capture_figures(Side, CapturingList, CapturedList, NewCapturingList, CapturedFiguresList, NewCapturedFiguresList, CapturingFigure, NewCapturingFigure, Depth).
+capture_multiple_figures(_, CapturingList, _, CapturingList, CapturedList, CapturedList, CapturingFigure, CapturingFigure, _).
 
-capture(black, board(Black, White), board(NewBlack, NewWhite)) :-
-    capture_figures(black, Black, White, NewBlack, [], CapturedList, _, _),
+capture(black, board(Black, White), board(NewBlack, NewWhite), Depth) :-
+    capture_figures(black, Black, White, NewBlack, [], CapturedList, _, _, Depth),
     list_subtract(White, CapturedList, NewWhite).
 
-capture(white, board(Black, White), board(NewBlack, NewWhite)) :-
-    capture_figures(white, White, Black, NewWhite, [], CapturedList, _, _),
+capture(white, board(Black, White), board(NewBlack, NewWhite), Depth) :-
+    capture_figures(white, White, Black, NewWhite, [], CapturedList, _, _, Depth),
     list_subtract(Black, CapturedList, NewBlack).
 
-move_capture(Side, Board1, Board2) :- capture(Side, Board1, Board2).
-move(Side, Board1, Board2) :- capture(Side, Board1, _), !, move_capture(Side, Board1, Board2).
+move_capture(Side, Board1, Board2, Depth) :- capture(Side, Board1, Board2, Depth).
+move(Side, Board1, Board2, Depth) :- capture(Side, Board1, _, Depth), !, move_capture(Side, Board1, Board2, Depth).
 
-move(Side, board(Black, White), board(NewBlack, NewWhite)) :-
+move(Side, board(Black, White), board(NewBlack, NewWhite), _) :-
     move_figure(Side, board(Black, White), board(NewBlack, NewWhite)).
 
 swap_node_type(min, max).
@@ -221,7 +244,7 @@ alpha_beta_prune(min, Alpha, _, Value) :- Value < Alpha.
 update_alpha_beta(max, Alpha, Beta, Value, NewAlpha, Beta) :- (Value > Alpha, !, NewAlpha = Value) ; (NewAlpha = Alpha).
 update_alpha_beta(min, Alpha, Beta, Value, Alpha, NewBeta) :- (Value < Beta,  !, NewBeta = Value) ; (NewBeta = Beta).
 
-possible_moves_list(Side, Board, List) :- findall(NewBoard, move(Side, Board, NewBoard), List).
+possible_moves_list(Side, Board, List, Depth) :- findall(NewBoard, move(Side, Board, NewBoard, Depth), List).
 
 find_best_move(_, _, [BestBoard], BestBoard, BestScore, 0, _, _) :-
     evaluate_board(BestBoard, BestScore), !.
@@ -258,19 +281,19 @@ find_best_move(Side, NodeType, [Board1 | Tail], BestBoard, BestScore, Depth, Alp
         )
     ).
 
-minmax(Side, _, Board, Board, Score, _, _, _) :-
-    possible_moves_list(Side, Board, []),
+minmax(Side, _, Board, Board, Score, Depth, _, _) :-
+    possible_moves_list(Side, Board, [], Depth),
     evaluate_board(Board, Score), !.
 
 minmax(Side, NodeType, Board, BestBoard, BestScore, Depth, Alpha, Beta) :-
-    possible_moves_list(Side, Board, PossibleMoves),
+    possible_moves_list(Side, Board, PossibleMoves, Depth),
     find_best_move(Side, NodeType, PossibleMoves, BestBoard, BestScore, Depth, Alpha, Beta).
 
 smart_move(white, Board, NewBoard) :-
-    depth(Depth),
+    look_ahead_on(Depth),
     minmax(white, max, Board, NewBoard, _, Depth, -100000, 100000).
 smart_move(black, Board, NewBoard) :-
-    depth(Depth),
+    look_ahead_on(Depth),
     minmax(black, min, Board, NewBoard, _, Depth, -100000, 100000).
 
 play_move(Side) :-
@@ -325,7 +348,7 @@ closestRem([fig(_, X, Y)|Tail], X1, Y1) :- closestRem(Tail, X1, Y1),
     ).
 
 move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
-    get_move(fig(AFTER,X1,Y1), B1, B2, Side),
+    get_move(fig(AFTER,_,_), B1, B2, Side),
     get_move(fig(BEFORE,X,Y), B2, B1, Side),
     closestRem(Rems, X, Y),
 
@@ -349,10 +372,10 @@ move_pieces_after_remove(Side, B1, B2, RemX, RemY, Rems) :-
                 (BEFORE = AFTER, move_answer_figure(NewY, NewX, AfterY, AfterX))
                     ;
                 (not(BEFORE = AFTER),
-                    ((not(((Side = black, AfterY = 1) ; (Side = white, AfterY = 8))),write(AfterY),nl, (move_answer_figure(NewY, NewX, AfterY, AfterX)))
+                    ((not(((Side = black, AfterY = 1) ; (Side = white, AfterY = 8))), (move_answer_figure(NewY, NewX, AfterY, AfterX)))
                         ;
                         (((Side = black, AfterY = 1) ; (Side = white, AfterY = 8)),
-                            (Temp1 is NewY - AfterY, Temp2 is NewX - AfterX, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2), write(Diagonal1),nl, write(Diagonal2),nl,
+                            (Temp1 is NewY - AfterY, Temp2 is NewX - AfterX, abs(Temp1, Diagonal1), abs(Temp2, Diagonal2),
                                 (
                                     (Diagonal1 = Diagonal2, Diagonal2 = 2, move_answer_figure_and_update(NewY, NewX, AfterY, AfterX))
                                         ;
@@ -406,15 +429,11 @@ transfer_whites(White) :-
         (C = 10, White = fig(king, X, Y))
     ).
 
-:- module(iaib185787).
 :- dynamic continueEating/2.
-:- dynamic depth/1.
 
 iaib185787(Color, X, Y) :-
     (
         asserta(continueEating(X, Y)),
-        look_ahead_on(Depth),
-        asserta(depth(Depth)),
         ((Color = 1, write("WHITE"), nl, play_move(white))
             ;
         (Color = 2, write("BLACK"), nl, play_move(black))
