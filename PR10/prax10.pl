@@ -7,7 +7,6 @@ iaib185787(MyColor, X, Y):-
     kaigu_variandid(X,Y,Suund,X1,Y1),
     !.
 
-
 iaib185787(_, _, _).
 
 leia_suund(1,1):- !.
