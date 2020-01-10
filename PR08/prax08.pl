@@ -31,7 +31,6 @@ terminal(Class, Leaf) :- is_a(SubClass, Class), terminal(SubClass, Leaf).
 
 count_terminals(Class, List, Count) :- findall(Leaf, terminal(Class, Leaf), List), get_len(List, Count).
 
-
 extinction(Predator, DeadTopPredators, DeadCount) :- not(eats(_, Predator)), count_terminals(Predator, DeadTopPredators, DeadCount).
 extinction(Pray, DeadSpieces, DeadCount) :- eats(Predator, Pray),
     extinction(Predator, DeadLast, Count),
