@@ -22,7 +22,6 @@ eats(kalad, zooplankton).
 eats(veeimetajad, kalad).
 eats(b, a).
 
-
 get_len([], 0).
 get_len([_|Tail], Count) :- get_len(Tail, Sum), Count is Sum + 1.
 
